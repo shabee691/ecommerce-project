@@ -56,7 +56,6 @@ $(document).ready(function () {
                 success: function (response) {
                     console.log(response);
                     if (response.add == true) {
-                        // $('#addrassArea').load('/account #addrassArea');
                         window.location.reload();
                         $('#addAddressModal').modal('hide');
                         $('.modal-backdrop').remove();

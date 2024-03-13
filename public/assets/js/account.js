@@ -74,11 +74,11 @@ $(document).ready(function () {
 
             $.ajax({
                 type: 'POST',
-                url: '/addaddresses',
+                url: '/addaddress',
                 data: formData,
                 success: function (response) {
                     console.log(response);
-                    if (response.add == true) {
+                    if (response.adds == true) {
                         $('#addrassArea').load('/account #addrassArea');
                         $('#addAddressModal').modal('hide');
                         $('.modal-backdrop').remove();

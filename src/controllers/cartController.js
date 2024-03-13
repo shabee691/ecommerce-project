@@ -1,6 +1,8 @@
 const Cart = require ("../../models/cart")
 const Product = require("../../models/addproduct")
 const address = require ("../../models/address")
+const User = require("../../models/signup")
+const coupon=require("../../models/coupon")
 const cartLoad = async (req,res)=>{
     try{ 
         const user_id = req.session.user_id; 
@@ -92,6 +94,20 @@ const updateCart = async (req,res)=>{
         console.log(err)
     }
 }
+const loadaccount = async(req,res)=>{
+    try {
+        const user = req.session.user_id
+        const userData = await User.findOne({_id:user})
+        const  addresses = await address.findOne({user:user})
+        const orders = []
+        // const orders = await Order.find({userId:req.session.user_id})
+        const CouponData = await coupon.find({})    
+        res.render('account',{userData,addresses,orders,CouponData,user})
+    } catch (error) {
+        console.log(error);
+    }
+  }
+
 const loadcheckout = async(req,res)=>{ 
     try {
         const userId = req.session.user_id;
@@ -122,6 +138,7 @@ module.exports={
     cartLoad,
     addCart,
     updateCart,
-    loadcheckout
+    loadcheckout,
+    loadaccount,
 
 }

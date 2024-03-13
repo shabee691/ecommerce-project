@@ -22,10 +22,12 @@ userRouter  .get("/",userController.homeLoad)
             .patch("/addcart",cartController.addCart)
             .post("/updatecart",cartController.updateCart)
             .get("/product",userController.productLoad)
+            .get("/account",cartController.loadaccount)
             .get("/wishlist",wishlistController.wishlistLoad)
             .patch("/addwishlist",wishlistController.addWishlist)
             .get("/checkout",cartController.loadcheckout)
             .post('/addaddresses',addressController.addaddress)
+            .post("/addaddress",addressController.addaddressprofile)
             .get('/success',addressController.success)
             
 
