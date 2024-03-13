@@ -1,30 +1,14 @@
-
-
-
+const Banner = require("../../models/banner")
 const Userss = require("../../models/signup")
+const Product = require("../../models/addproduct")
+const Cart = require ("../../models/cart")
+const Category = require ("../../models/categories")
 const bcrypt = require("bcrypt")
 const sendotp = require("../../services/otp")
 const otp = require("../../services/genratorOtp")
 const signupOtpVerification = require("../../models/signupOtp")
-
-
-
 const dotenv = require("dotenv");
 dotenv.config()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 const securePassword = async (password) => {
   try {
     const passwordHash = await bcrypt.hash(password, 10);
@@ -33,12 +17,6 @@ const securePassword = async (password) => {
     console.log(error.message);
   }
 }
-
-
-
-
-
-
 const signupget = (req, res) => {
   res.render("signup")
 };
@@ -51,25 +29,14 @@ const signupPost = async (req, res) => {
 
   });
   try {
-
-
-
     //  if (!req.body.name && !req.body.email && !req.body.mobile && !req.body.password &&! req.body.name) {
     //      return res.render("signup",  { message: 'All fields are required.' });
-
     // }
-
-
     //   if (!emailRegex.test(req.body.email )) {
     //     return res.render("signup", { message:'Invalid email format.' });
-
-
     // }
-
     //   if (req.body.password.length < 8) {
     //     return res.render("signup",{ message: 'Password must be at least 8 characters long.' });
-
-
     // }
     //  if (req.body.mobile.length < 10){
     //       res.render("signup",{message: "Mobile number should be 10 digit "})
@@ -84,51 +51,24 @@ const signupPost = async (req, res) => {
     //     res.render("signup",{message:"Conform Password Should be same as first password"})
     //     return;
     //   }
-
-
-
-
     const spassword = await securePassword(req.body.password)
-
     const { name, email, mobile } = req.body;
-
     const user = new Userss({
       name: name,
       email: email,
       mobile: mobile,
       password: spassword,
     })
-
-
     const userData = await user.save();
-
     console.log(userData);
-
     await signupotp(userData, res)
-
-
-
-
-
-
-
-
-
   }
-
-
   catch (error) {
     console.error("this is the error", error.message);
   }
-
 };
-
-
-
 const signupotp = async ({ email }, res) => {
-
   try {
-
     const sendmail = {
       from: process.env.SMTP_MAIL,
       to: email,
@@ -137,90 +77,158 @@ const signupotp = async ({ email }, res) => {
      for verification of ${email}
       <p>and your otp is : ${otp}</p>
     `
-
     };
     const hashedOtp = await bcrypt.hash(otp, 10);
-
     const newOtpVerification = new signupOtpVerification({
       otp: hashedOtp,
       createAt: Date.now(),
     });
-
     const verifydata = await newOtpVerification.save();
-
     console.log(verifydata);
-
     await sendotp.sendMail(sendmail)
-
     res.redirect(`/verifyotp`);
   } catch (error) {
-
     console.log("the eerror", error);
-
-
-  }
-}
-
-
-
-
-
+  }}
 const loginget = (req, res) => {
   res.render("login")
 };
 const loginpost = async (req, res) => {
-
-
   try {
-
-    if (!email && !password) {
-
+    const email = req.body.email
+    const password = req.body.password 
+    const UserData = await Userss.findOne({email})
+    
+    if (UserData) {
+      if(UserData.Is_verified === true){
+        const passwordMatch = await bcrypt.compare(password,UserData.password)
+        if(passwordMatch){
+          req.session.user_id= UserData._id
+          res.redirect("/")
+        }
+        else{
+          res.render('login', { message: "Incorrect password" });
+        }
     }
-  }
-  catch (e) {
-
-  }
+  }}
+  catch (err) {
+    console.log("loginpost",err)
+}
 };
-
-
-
-
 const otpverificationget = async (req, res,) => {
-
   res.render("otp", { emaila })
-
-
-
-
 };
 const otpverificationpost = async (req, res) => {
-
   try {
     const postotp = req.body.otp
     console.log(postotp);
-
     const hashed = await signupOtpVerification.findOne();
     const { otp: hashedOtp } = hashed
     console.log(hashedOtp);
-
-
     const validOtp = await bcrypt.compare(postotp, hashedOtp);
-
     if (!validOtp) {
       return res.render("otp", { message: "otp was expired/not valid" })
     }
     else {
       await Userss.updateOne({ $set: { Is_verified: true } });
       res.redirect("/login")
-
-
     }
-
   }
   catch (error) {
     console.log(error);
   }
 };
+const homeLoad = async(req,res)=>{
+  try {
+    const user_id = req.session.user_id; 
+    const cartData =[] 
+    //  await Cart.findOne({user:user_id}).populate("product.productId")
+    const userData = await Userss.findOne({_id:user_id})
+    const banner = await Banner.find({})
+
+    res.render('home',{user:userData,cart:cartData,banner});
+} catch (error) {
+    console.log(error.message);
+}
+}
+const shopLaod = async (req,res)=>{
+ try{
+  const categoryId = req.query.category;
+        const cart =  await Cart.findOne({user:req.session.user_id}).populate("product.productId")
+        const priceFilter = req.query.priceFilter === "low-to-high" ? 1 : -1;
+        const page = parseInt(req.query.page) || 1;
+        const itemsPerPage = 9;
+
+        const userData = await Userss.findOne({ _id: req.session.user_id });
+        const search = req.query.search;
+
+        let productData;
+
+        let filterCriteria = {
+            is_blocked: false,
+            isCategoryBlocked: false
+        };
+
+        if (search) {
+            filterCriteria.name = { $regex: search, $options: 'i' };
+        }
+
+        if (categoryId) {
+            filterCriteria.categoryId = categoryId;
+        }
+
+        const totalCount = await Product.countDocuments(filterCriteria);
+
+        if (totalCount > 0) {
+            const totalPages = Math.ceil(totalCount / itemsPerPage);
+
+            productData = await Product.find(filterCriteria)
+                .populate('categoryId')
+                .sort({ price: priceFilter })
+                .skip((page - 1) * itemsPerPage)
+                .limit(itemsPerPage);
+
+            const category = await Category.find({});
+
+            res.render("shop", {
+                product: productData,
+                user: userData,
+                category,
+                totalPages,
+                currentPage: page,
+                cart
+            });
+        } else { 
+            res.render("shop", {
+                product: [],
+                user: userData,
+                category: [],
+                totalPages: 0,
+                currentPage: 0,
+                cart
+            });
+        }
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).send('Internal Server Error');
+    }
+}
+
+const productLoad = async (req,res)=>{
+  try{
+    
+    const user = await Userss.find({_id:req.session.user_id})
+    const id = req.query.id
+    const product = await Product.findOne({_id:id})
+    const review = []
+    const date = Date.now()
+    
+   res.render("product",{product,user,review,date}) 
+  }
+  catch(err){
+
+  }
+}
 
 
 
@@ -232,6 +240,9 @@ module.exports = {
   loginget,
   loginpost,
   otpverificationget,
-  otpverificationpost
+  otpverificationpost,
+  homeLoad,
+  shopLaod,
+  productLoad
 
 }

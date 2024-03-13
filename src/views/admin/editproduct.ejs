@@ -170,9 +170,8 @@
                                         <div class="form-group">
                                             <label>Category</label>
                                             <select class="form-control" id="product-category" name="category">
-                                                    <option value="<%= product.categoryId %>"><%= product.categoryId %></option>
                                                 <% for (let i = 0; i < category.length; i++) { %>
-                                                        <option value="<%= category[i] %>"><%= category[i].name%></option>
+                                                        <option value="<%= category[i].name %>"><%= category[i].name%></option>
                                                 <% } %>
                                             </select>
 
@@ -199,7 +198,7 @@
                                                         <div class="rounded-image-preview">
                                                             <img id="imagePreview1" style="max-width: 80px; max-height: 80px;" src="/public/assets/images/products/sharpened/<%= product.images[0]  %>" alt="Preview" />
                                                         </div>
-                                                        <input name="image" type="file" accept="image/*" id="imageInput1" class="imageInput">
+                                                        <input name="image" type="file" accept="image/*" id="imageInput1" class="imageInput" required>
                                                     </label>
                                                 </div>
                                                 <div class="col-lg-3 col-md-6 rounded-image-preview">
@@ -207,7 +206,7 @@
                                                         <div class="rounded-image-preview">
                                                             <img id="imagePreview2"style="max-width: 80px; max-height: 80px;" src="/public/assets/images/products/sharpened/<%= product.images[1] %>" alt="Preview" />
                                                         </div>
-                                                        <input name="image" type="file" accept="image/*" id="imageInput2" class="imageInput">
+                                                        <input name="image" type="file" accept="image/*" id="imageInput2" class="imageInput" required>
                                                     </label>
                                                 </div>
             
@@ -216,16 +215,16 @@
                                                         <div class="rounded-image-preview">
                                                             <img id="imagePreview3" style="max-width: 80px; max-height: 80px;" src="/public/assets/images/products/sharpened/<%=product.images[2]  %>" alt="Preview" />
                                                         </div>
-                                                        <input name="image" type="file" accept="image/*" id="imageInput3" class="imageInput">
+                                                        <input name="image" value="images[2]" type="file" accept="image/*" id="imageInput3" class="imageInput" required>
                                                     </label>
                                                 </div>
             
                                                 <div class="col-lg-3 col-md-6 rounded-image-preview">
-                                                    <label for="imageInput4" class="image-label"><%= product.images[4] %>
+                                                    <label for="imageInput4" class="image-label"><%= product.images[3] %>
                                                         <div class="rounded-image-preview">
                                                             <img id="imagePreview4" style="max-width: 80px; max-height: 80px;" src="/public/assets/images/products/sharpened/<%= product.images[3]  %>" alt="Preview" />
                                                         </div>
-                                                        <input name="image" type="file" accept="image/*" id="imageInput4" class="imageInput">
+                                                        <input name="image" type="file" accept="image/*" id="imageInput4" class="imageInput" required>
                                                     </label>
                                                 </div>
                                                 

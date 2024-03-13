@@ -10,14 +10,6 @@ const categoriesSchema  =new mongoose.Schema(
         type:String,
         require:true
 
-    },
-    is_list:{
-        type:Boolean,
-        default:true
-    },
-    is_deleted:{
-        type:Boolean,
-        default:false
     }
 
 

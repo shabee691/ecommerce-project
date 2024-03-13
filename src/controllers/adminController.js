@@ -115,9 +115,46 @@ const addcategorypost = async function (req,res){
                 res.render("addcategory",{message:"category name is existed"})
             }
     }
-    catch{
+    catch(err){
+      console.log(err,"addcategoryPost");
+    
+}}
+const deleteCategory = async (req,res)=>{
+  try {
+    const categoryId= req.params.id
+     await Category.findByIdAndDelete(categoryId)
+    res.redirect("/admin/category")
 
-    }
+}
+catch (err){
+  console.log(err,"deletecategory");
+}}
+const editcategoryLaod = async(req,res)=>{
+  try{
+    const productid = req.query.id
+    const categoryData = await Category.findOne({_id:productid})
+    res.render("editcategory",{categoryData})
+}
+catch(err){
+    console.log(err,':editcategoryload error');
+}
+}
+
+const editcategoryPost = async(req,res)=>{
+try{
+  const categoryid = req.body.id 
+  const categoryD = req.body 
+  const update =  {
+    name:categoryD.name,
+    description:categoryD.description
+}
+await Category.findOneAndUpdate({_id:categoryid},update)
+res.redirect("/admin/category")
+}
+catch (err){
+  console.log(err,"editcategory");
+}
+  
 }
 
 
@@ -136,7 +173,10 @@ module.exports = {
     blockCategory,
     addcategoryget,
     addcategorypost,
+    editcategoryLaod,
+    editcategoryPost,
     usersget,
+    deleteCategory
    
     
     

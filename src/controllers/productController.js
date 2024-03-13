@@ -1,4 +1,4 @@
-const Category = require ("../../models/categories")
+ const Category = require ("../../models/categories")
 const Product =require ("../../models/addproduct")
 const Sharp= require("sharp")
 
@@ -70,9 +70,7 @@ const editProductPost = async (req,res)=>{
             const productid = req.query.id
             const ProductD = req.body 
             const files=req.files
-            const categoryName = ProductD.category.name
-           
-            const img=req.files.map((files) => files.filename)
+            const img=req.files.map((files) => files.filename  )
             //image rezise
             for (let i = 0; i < img.length; i++) {
                 await Sharp("public/assets/images/products/original/" + img[i])
@@ -85,7 +83,7 @@ const editProductPost = async (req,res)=>{
                     name:ProductD.name,
                     quantity:ProductD.quantity,
                     price:ProductD.price,
-                    categoryId:ProductD.category.name,
+                    categoryId:ProductD.category,
                     offer:ProductD.offer,
                     Description:ProductD.description,
                     images:img

@@ -185,7 +185,7 @@
                                                         <th scope="col" class="text-center">Criteria Amount</th>
                                                         <th scope="col" class="text-center">Expire Date</th>
                                                         <th scope="col" class="text-center">Edit</th>
-                                                        <th scope="col" class="text-center">Block</th>
+                                                        <th scope="col" class="text-center">Delete</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -201,13 +201,7 @@
                                                         <td class="text-center"><a href="editcoupon?id=<%= coupon[i]._id %>"
                                                                 class="btn btn-sm btn-primary">Edit</a></td>
                                                         <td class="text-center">
-                                                            <% if (coupon[i].isBlocked) { %>
-                                                            <a href="#" class="btn btn-sm btn-success unblock-user"
-                                                                data-user-id="<%= coupon[i]._id %>">Unblock</a>
-                                                            <% } else { %>
-                                                            <a href="#" class="btn btn-sm btn-warning block-user"
-                                                                data-user-id="<%= coupon[i]._id %>">Block</a>
-                                                            <% } %>
+                                                            <button type="submit" onclick="window.location.href='/admin/deletecoupon/<%= coupon[i]._id%>' "class="btn btn-sm btn-success unblock-user">Delete</button>
                                                         </td>
                                                     </tr>
                                                     <% } %>

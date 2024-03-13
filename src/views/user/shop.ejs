@@ -8,7 +8,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Molla - Bootstrap eCommerce Template</title>
+    <title>eCommerce</title>
     <meta name="keywords" content="HTML5 Template">
     <meta name="description" content="Molla - Bootstrap eCommerce Template">
     <meta name="author" content="p-themes">
@@ -286,9 +286,11 @@ async function handleSearchInput(event) {
                                             <% } else { %>
                                                 <span class="product-label label-out-of-stock">Out of Stock</span>
                                             <% } %>
+                                           
                                           <a href="/product?id=<%= product._id %>">
-                                            <img src="/public/assets/images/products/sharpened/<%= product.images.image1 %>" alt="Product image" class="product-image">
+                                            <img src="/public/assets/images/products/sharpened/<%= product.images[0]%>" alt="Product image" class="product-image">
                                           </a>
+                                         
                                          
                                           <div class="product-action">
                                             <a  class="btn-product btn-cart"
@@ -514,12 +516,9 @@ async function handleSearchInput(event) {
 
 
 <script>
-  
-
-
 function addToCart(productId) {
     $.ajax({
-        url: '/addtocart',
+        url: '/addcart',
         method: 'patch',
         data: { productId },
         success: function (response) {
