@@ -86,6 +86,15 @@ const couponDelete = async (req,res)=>{
         console.log(err,"couponDelete")
     }
 }
+const couponCheck= async (req,res)=>{
+    try{
+        const user = req.session.user_id
+        const couponcode= req.body.coupon
+    }
+    catch(err){
+
+    }
+}
 module.exports={
     couponLoad,
     addcouponLoad,

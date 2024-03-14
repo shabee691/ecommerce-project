@@ -14,49 +14,54 @@ const cartLoad = async (req,res)=>{
       }
 }
 
-const addCart = async (req,res)=>{
-try{
-        const UserActive = req.session.user_id
-        if(!UserActive){
-            return res.json({session:false,error:'you need to login'})
+const addCart = async (req, res) => {
+    try {
+        const UserActive = req.session.user_id;
+        if (!UserActive) {
+            return res.json({ session: false, error: 'You need to login' });
         }
-        const product_id = req.body.productId
+        const productId = req.body.productId;
 
-        const ProductData = await Product.findById(product_id)
-        if(ProductData.quantity==0){
-            return res.json({quantity:false,error:'produt is out of stock!'})
+        const productData = await Product.findById(productId);
+        if (!productData) {
+            return res.json({ quantity: false, error: 'Product not found' });
         }
-        
-        if(ProductData.quantity>0){
-            const CartData = await Cart.findOne({user:UserActive ,'product.productId': product_id})
-            
-        
-        if(CartData){
-            return res.json({success:false})
+
+        if (productData.quantity === 0) {
+            return res.json({ quantity: false, error: 'Product is out of stock' });
         }
-        const data = {
-            productId: product_id,
-            price: ProductData.price,
-            totalPrice: ProductData.price,
+
+        let cartData = await Cart.findOne({ user: UserActive });
+        if (!cartData) {
+            // If user has no cart, create a new cart
+            cartData = new Cart({ user: UserActive, product: [] });
         }
-        await Cart.findOneAndUpdate(
-            { user: UserActive },
-            {
-                $set: { user: UserActive, couponDiscount: 0 },
-                $push: { product: data },
-            },
-            { upsert: true, new: true }
-        );
+
+        const existingProductIndex = cartData.product.findIndex(item => String(item.productId) === String(productId));
+
+        if (existingProductIndex !== -1) {
+            // Update quantity and total price
+            cartData.product[existingProductIndex].quantity += 1;
+            cartData.product[existingProductIndex].totalPrice += productData.price;
+        } else {
+            // Add the product to the cart
+            cartData.product.push({
+                productId: productId,
+                price: productData.price,
+                quantity: 1,
+                totalPrice: productData.price
+            });
+        }
+
+        // Save the updated cart
+        await cartData.save();
 
         return res.json({ success: true, stock: true });
-    
-
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ error: 'Internal server error' });
     }
-
-}catch(err){
-    console.log(err);
-}
-}
+};
 const updateCart = async (req,res)=>{
     try{
         const productId = req.body.productId
@@ -94,19 +99,25 @@ const updateCart = async (req,res)=>{
         console.log(err)
     }
 }
-const loadaccount = async(req,res)=>{
+const removecartitem = async (req, res) => {
+    const productId = req.body.productId;
+    const userId = req.session.user_id;
+
     try {
-        const user = req.session.user_id
-        const userData = await User.findOne({_id:user})
-        const  addresses = await address.findOne({user:user})
-        const orders = []
-        // const orders = await Order.find({userId:req.session.user_id})
-        const CouponData = await coupon.find({})    
-        res.render('account',{userData,addresses,orders,CouponData,user})
+        await Cart.findOneAndUpdate(
+            { user: userId },
+            {
+                $pull: { product: { productId: productId } }, 
+            }
+        );
+
+        res.json({ success: true });
     } catch (error) {
-        console.log(error);
+        console.error("Error removing cart item:", error);
+        res.status(500).json({ success: false, error: "Internal Server Error" });
     }
-  }
+};
+
 
 const loadcheckout = async(req,res)=>{ 
     try {
@@ -138,6 +149,6 @@ module.exports={
     addCart,
     updateCart,
     loadcheckout,
-    loadaccount,
+    removecartitem,
 
 }

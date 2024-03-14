@@ -3,6 +3,8 @@ const Userss = require("../../models/signup")
 const Product = require("../../models/addproduct")
 const Cart = require ("../../models/cart")
 const Category = require ("../../models/categories")
+const address = require("../../models/address")
+const coupon = require ("../../models/coupon")
 const bcrypt = require("bcrypt")
 const sendotp = require("../../services/otp")
 const otp = require("../../services/genratorOtp")
@@ -228,6 +230,19 @@ const productLoad = async (req,res)=>{
 
   }
 }
+const loadaccount = async(req,res)=>{
+  try {
+      const user = req.session.user_id
+      const userData = await Userss.findOne({_id:user})
+      const  addresses = await address.findOne({user:user})
+      const orders = []
+      // const orders = await Order.find({userId:req.session.user_id})
+      const CouponData = await coupon.find({})    
+      res.render('account',{userData,addresses,orders,CouponData,user})
+  } catch (error) {
+      console.log(error);
+  }
+}
 const edituser = async (req,res)=>{
   try{
     const userData = await Userss.findById(req.session.user_id)
@@ -301,6 +316,7 @@ module.exports = {
   shopLaod,
   productLoad,
   edituser,
-  userpasswordChange
+  userpasswordChange,
+  loadaccount
 
 }

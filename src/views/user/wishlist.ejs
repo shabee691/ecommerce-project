@@ -197,9 +197,7 @@
 							<tr>
 								<th>Product</th>
 								<th>Price</th>
-								<th>Stock</th>
-								<th style="text-align: center;">Status</th>
-								<th></th>
+								<th>Stock</th>  
 							</tr>
 						</thead>
 
@@ -225,10 +223,6 @@
                                 <%}else{%>
                                     <td class="stock-col"><span class="in-stock">in stock</span></td>
                                 <%}%>
-								<td class="action-col">
-                                     <a onclick="addToCart('<%=product._id%>');" class="btn btn-block btn-outline-primary-2"><span><i class="icon-cart-plus"></i>add to cart</span></a>
-								</td>
-								<td class="remove-col"><button class="btn-remove"><i class="icon-close"></i></button></td>
 							</tr>
                         <%})%>
 						</tbody>

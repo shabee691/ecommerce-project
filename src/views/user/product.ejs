@@ -24,6 +24,7 @@
     <meta name="msapplication-TileColor" content="#cc9966">
     <meta name="msapplication-config" content="public/assets/images/icons/browserconfig.xml">
     <meta name="theme-color" content="#ffffff">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- Plugins CSS File -->
     <link rel="stylesheet" href="public/assets/css/bootstrap.min.css">
     <link rel="stylesheet" href="public/assets/css/plugins/owl-carousel/owl.carousel.css">
@@ -301,7 +302,7 @@
                                         onclick="addToCart('<%= product._id %>');"><span>add to cart</span></a>
 
                                     <div class="details-action-wrapper">
-                                        <a onclick="addtoWishlist('<%= product._id%>')" class="btn-product btn-wishlist" title="Wishlist"><span>Add to
+                                        <a onclick="addtoWishlist('<%= product._id%>')"  title="Wishlist"><i class="fa-solid fa-heart" style="color: #d03216;"></i><span>Add to
                                                 Wishlist</span></a>
                                     </div><!-- End .details-action-wrapper -->
                                 </div><!-- End .product-details-action -->
@@ -452,15 +453,7 @@ function addToCart(productId) {
                     confirmButtonText: 'Login',
                     cancelButtonText: 'Cancel',
                 });}
-
-            else if(response.success===false){
-                swal.fire({
-                    title:"Product is already in cart",
-                    icon:'warning',
-                    showCancelButton:true,
-                    cancelButtonText:'cancel'
-                })
-            } else {
+                 else {
                 Swal.fire(
                     'Saved to cart!',
                     'Product added to cart successfully!',

@@ -28,10 +28,15 @@ const addWishlist = async (req,res)=>{
         if(ProductData.quantity>0){
             const CartData = await wishlist.findOne({user:UserActive ,'product.productId': product_id})
             
+            if (CartData) {
+                // Product already exists in wishlist, so delete it
+                await wishlist.findOneAndUpdate(
+                    { user: UserActive },
+                    { $pull: { product: { productId: product_id } } }
+                );
+                return res.json({success:true})
+            } else {
         
-        if(CartData){
-            return res.json({success:false,error:'product is already in wishlist'})
-        }
         const data = {
             productId: product_id,
             name:ProductData.name,
@@ -49,7 +54,7 @@ const addWishlist = async (req,res)=>{
 
         return res.json({ success: true, stock: true });
     
-
+        }
     }
 
 }catch(err){
