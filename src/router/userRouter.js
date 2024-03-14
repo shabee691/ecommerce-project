@@ -28,7 +28,12 @@ userRouter  .get("/",userController.homeLoad)
             .get("/checkout",cartController.loadcheckout)
             .post('/addaddresses',addressController.addaddress)
             .post("/addaddress",addressController.addaddressprofile)
+            .delete("/deleteaddress",addressController.deleteaddress)
+            .post("/editaddresses",addressController.editaddress)
+            .post("/edituser",userController.edituser)
+            .post("/passwordchange",userController.userpasswordChange)
             .get('/success',addressController.success)
+            
             
 
             

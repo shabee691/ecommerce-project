@@ -141,8 +141,7 @@ const otpverificationpost = async (req, res) => {
 const homeLoad = async(req,res)=>{
   try {
     const user_id = req.session.user_id; 
-    const cartData =[] 
-    //  await Cart.findOne({user:user_id}).populate("product.productId")
+    const cartData =await Cart.findOne({user:user_id}).populate("product.productId")
     const userData = await Userss.findOne({_id:user_id})
     const banner = await Banner.find({})
 
@@ -229,6 +228,63 @@ const productLoad = async (req,res)=>{
 
   }
 }
+const edituser = async (req,res)=>{
+  try{
+    const userData = await Userss.findById(req.session.user_id)
+      await Userss.findOneAndUpdate(
+        {email:userData.email},
+        {$set:{
+          name:req.body.editname,
+          mobile:req.body.editmobile,
+          email:req.body.editemail,
+        }},
+        {new:true}
+      )
+      res.redirect("/account")
+  }catch(err){
+    console.log(err)
+  }
+}
+const userpasswordChange = async (req,res)=>{
+  try{
+    const userData = await Userss.findById(req.session.user_id)
+    if(req.body.currentpassword||(req.body.newpassword&&req.body.newpassword2)){
+      if(!req.body.newpassword||req.body.newpassword===""||!req.body.newpassword2||req.body.newpassword2 ===""){
+        return res.render("account",{message:"new passwords cannot be empty"})
+      }
+      if(req.body.newpassword!==req.body.newpassword2){
+        return res.render("account",{maessage:"newpasswords not match"})
+      }
+      if(req.body.newpassword.length <8 ){
+        return res.render("account",{message:"new password atleast 8 character"})
+      }
+      else{
+        const matchPassword = await bcrypt.compare(req.body.currentpassword,userData.password)
+        if (matchPassword) {
+          sPassword = await securePassword(req.body.newpassword);
+      } else {
+          return res.render('account', { message: 'Current password is incorrect. Please try again.'});
+      }
+      }
+    } else {
+      sPassword = userData.password;
+      return res.render('account', { message: 'Please enter either a current password or new passwords.'});
+  }
+  await Userss.findOneAndUpdate(
+    {email:userData.email},
+    {
+      $set:{
+        password:sPassword
+      }
+    },
+    {new:true}
+  )
+  res.redirect("/account")
+  }
+  catch(err){
+    console.log(err);
+  }
+}
 
 
 
@@ -243,6 +299,8 @@ module.exports = {
   otpverificationpost,
   homeLoad,
   shopLaod,
-  productLoad
+  productLoad,
+  edituser,
+  userpasswordChange
 
 }

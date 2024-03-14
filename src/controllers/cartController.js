@@ -114,7 +114,6 @@ const loadcheckout = async(req,res)=>{
         const  addresses = await address.findOne({user:userId})
         const cartData = await Cart.findOne({user:userId}).populate('product.productId').populate('user')
         if(cartData){
-            console.log(cartData.couponDiscount,"wh")
             cartData.couponDiscount!=0 ? await cartData.populate('couponDiscount') : 0
             const discountpercentage = cartData.couponDiscount !=0 ? cartData.couponDiscount.discountPercentage : 0;
             const maxDiscount = cartData.couponDiscount !=0 ? cartData.couponDiscount.maxDiscountAmount : 0;

@@ -209,7 +209,7 @@ $('#submitAddressBtns').on('click', function () {
         data: formData,
         success: function (response) {
             if (response.success == true) {
-                $('#addrassArea').load('/checkout #addrassArea');
+                $('#addrassArea').load('/account #addrassArea');
                 $('#addAddressModals').modal('hide');
                 $('.modal-backdrop').remove();
             }
