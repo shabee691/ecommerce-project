@@ -170,7 +170,7 @@
 							<a class="btn btn-outline-warning" href="#" data-toggle="modal" data-target="#addAddressModal">Add Address</a>
 						</span>
 			
-						
+						<form id="orderForm">
 							<div class="row" style="justify-content: space-around;">
 								<% if (addresses && addresses.address && addresses.address.length> 0) { %>
 									
@@ -226,9 +226,10 @@
 												</tr>
 												<% }); %>
 
-												<tr class="summary-subtotal">
+												<tr class="summarysubtotal">
 													<td>Subtotal:</td>
 													<td>₹<%= subtotal %></td>
+													<input type="hidden" name="subtotal" value="<%= subtotal %>">
 												</tr>
 												<tr>
 													<td>Shipping:</td>
@@ -238,11 +239,13 @@
 													<tr>
 														<td class="text-danger">Coupon Discount:</td>
 														<td id="disamount" class="text-danger">-<%= disamo %></td>
+														<input type="hidden" name="disamount" value="<%=  disamo %>">
 													</tr>
 													<% } %>
 												<tr class="summary-total">
 													<td>Total:</td>
 													<td id="totalamount">₹<%= discount %></td>
+													<input type="hidden" name="totalamount" value="<%= discount %>">
 												</tr>
 											</tbody>
 										</table>
@@ -296,11 +299,12 @@
 
 										<button type="button" id="placeOrderBtn" class="btn btn-outline-primary-2 btn-order btn-block">
 											<span class="btn-text">Place Order</span>
-											<span class="btn-hover-text">Proceed to Checkout</span>
+											<span class="btn-hover-text"type="button" onclick="validateFormAddress(event)" id="placeOrderBtn" class="btn btn-outline-warning">Proceed to Checkout</span>
 										</button>
 									</div>
 								</aside>
 							</div>
+						</form>
 					</div>
 				</div>
 			</div>
@@ -523,7 +527,7 @@ aria-hidden="true">
 
 
 	<!-- Plugins JS File -->
-	<script src="/public/assets/js/checkout.js"></script>
+	<script src="public/assets/js/checkout.js"></script>
 	<script src="public/assets/js/jquery.min.js"></script>
 	<script src="public/assets/js/bootstrap.bundle.min.js"></script>
 	<script src="public/assets/js/jquery.hoverIntent.min.js"></script>

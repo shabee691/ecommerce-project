@@ -5,12 +5,13 @@ const userController = require("../controllers/usercontroller")
 const cartController = require ("../controllers/cartController")
 const wishlistController = require("../controllers/wishlistController")
 const addressController =require ("../controllers/addressController") 
+const couponController = require ("../controllers/couponController")
+const orderController = require("../controllers/orderController")
 
 
 
 //UserRouter
 userRouter  .get("/",userController.homeLoad)
-            .post("/")
             .get("/signup",userController.signupget)
             .post("/signup",userController.signupPost)
             .get("/login",userController.loginget)
@@ -27,13 +28,21 @@ userRouter  .get("/",userController.homeLoad)
             .get("/wishlist",wishlistController.wishlistLoad)
             .patch("/addwishlist",wishlistController.addWishlist)
             .get("/checkout",cartController.loadcheckout)
-            .post('/addaddresses',addressController.addaddress)
-            .post("/addaddress",addressController.addaddressprofile)
+            .post("/placeorder",orderController.placeorder)
+            .get("/orderdetails",orderController.loadorderdetail)
+            .post('/addaddress',addressController.addaddress)
+            .post("/addaddresses",addressController.addaddress)
             .delete("/deleteaddress",addressController.deleteaddress)
             .post("/editaddresses",addressController.editaddress)
             .post("/edituser",userController.edituser)
             .post("/passwordchange",userController.userpasswordChange)
             .get('/success',addressController.success)
+            .post('/checkcoupon',couponController.couponCheck)
+            .post("/removecoupon",couponController.removecoupon)
+            .post("'/cancelproduct",orderController.cancelproduct)
+            .post("/verypayment",userController.verifypayment)
+            .get("/invoice",userController.invoice)
+            
             
             
 

@@ -1,33 +1,5 @@
 const address = require("../../models/address")
-const addaddress = async (req, res) => {
-    try {
-        const userId = req.session.user_id;
-
-        const data = {
-            fullName: req.body.fullName,
-            country: req.body.country,
-            housename: req.body.housename,
-            state: req.body.state,
-            city: req.body.city,
-            pincode: req.body.pincode,
-            phone: req.body.phone,
-            email: req.body.email
-        };
-        // Update the address
-        await address.findOneAndUpdate(
-            { user: userId },
-            { $set: { user: userId }, $push: { address: data } },
-            { upsert: true, new: true }
-        );
-        res.json({add:true})
-        res.redirect('/success');
-    } catch (error) {
-        console.error(error);
-        res.status(500).send("Internal Server Error");
-    }
-};
-
-const addaddressprofile = async (req,res)=>{
+const addaddress= async (req,res)=>{
     try {
         const userId = req.session.user_id;
 
@@ -50,11 +22,11 @@ const addaddressprofile = async (req,res)=>{
         );
 
         // Send a JSON response
-        res.json({ adds: true, address: updatedAddress });
+        res.json({ add: true, address: updatedAddress });
 
     } catch (error) {
         console.error(error);
-        res.status(500).json({ adds: false, error: "Internal Server Error" });
+        res.status(500).json({ add: false, error: "Internal Server Error" });
     }
 }
 const deleteaddress = async (req,res)=>{
@@ -106,7 +78,6 @@ const success = async(req,res)=>{
 }
 module.exports={
     addaddress,
-    addaddressprofile,
     success,
     deleteaddress,
     editaddress

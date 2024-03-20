@@ -13,7 +13,6 @@ const cartLoad = async (req,res)=>{
           console.log(error);
       }
 }
-
 const addCart = async (req, res) => {
     try {
         const UserActive = req.session.user_id;
@@ -34,11 +33,9 @@ const addCart = async (req, res) => {
         let cartData = await Cart.findOne({ user: UserActive });
         if (!cartData) {
             // If user has no cart, create a new cart
-            cartData = new Cart({ user: UserActive, product: [] });
+            cartData = new Cart({ user: UserActive, product: [],});
         }
-
         const existingProductIndex = cartData.product.findIndex(item => String(item.productId) === String(productId));
-
         if (existingProductIndex !== -1) {
             // Update quantity and total price
             cartData.product[existingProductIndex].quantity += 1;
@@ -51,6 +48,9 @@ const addCart = async (req, res) => {
                 quantity: 1,
                 totalPrice: productData.price
             });
+            await Cart.findOneAndUpdate(
+                {$set:{user:UserActive,couponDiscount:0}}
+            )
         }
 
         // Save the updated cart
@@ -121,28 +121,30 @@ const removecartitem = async (req, res) => {
 
 const loadcheckout = async(req,res)=>{ 
     try {
-        const userId = req.session.user_id;
-        const  addresses = await address.findOne({user:userId})
-        const cartData = await Cart.findOne({user:userId}).populate('product.productId').populate('user')
-        if(cartData){
-            cartData.couponDiscount!=0 ? await cartData.populate('couponDiscount') : 0
-            const discountpercentage = cartData.couponDiscount !=0 ? cartData.couponDiscount.discountPercentage : 0;
-            const maxDiscount = cartData.couponDiscount !=0 ? cartData.couponDiscount.maxDiscountAmount : 0;
-            const subtotal = cartData.product.reduce((acc,val)=> acc+val.totalPrice,0);
-            const percentageDiscount = subtotal - (discountpercentage/100) *subtotal;
-            const discountAmount =subtotal - percentageDiscount;
-            const discount = subtotal - maxDiscount
-            console.log(discount,subtotal,"discount","subtotal")
-            if(discountAmount<=maxDiscount){
-                res.render('checkout',{addresses,discount:percentageDiscount,cartData,subtotal,disamo:discountAmount})
-            }else{
-                res.render('checkout',{addresses,discount,cartData,subtotal,disamo:maxDiscount})
+            const userId = req.session.user_id;
+            const  addresses = await address.findOne({user:userId})
+            const cartData = await Cart.findOne({user:userId}).populate('product.productId').populate('user')
+            console.log(cartData);
+            if(cartData){
+                console.log(cartData.couponDiscount,"wh")
+                cartData.couponDiscount!=0 ? await cartData.populate('couponDiscount'):0;
+                const discountpercentage = cartData.couponDiscount !=0 ? cartData.couponDiscount.discountPercentage : 0;
+                const maxDiscount = cartData.couponDiscount !=0 ? cartData.couponDiscount.maxDiscountAmount : 0;
+                const subtotal = cartData.product.reduce((acc,val)=> acc+val.totalPrice,0);
+                const percentageDiscount = subtotal - (discountpercentage/100) *subtotal;
+                const discountAmount =subtotal - percentageDiscount;
+                const discount = subtotal - maxDiscount
+                console.log(discount,subtotal,"discount","subtotal")
+                if(discountAmount<=maxDiscount){
+                    res.render('checkout',{addresses,discount:percentageDiscount,cartData,subtotal,disamo:discountAmount})
+                }else{
+                    res.render('checkout',{addresses,discount,cartData,subtotal,disamo:maxDiscount})
+                }
+                console.log(discountpercentage,percentageDiscount,"percentage");
             }
-            
+        } catch (error) { 
+            console.log(error);
         }
-    } catch (error) { 
-        console.log(error);
-    }
 }
 module.exports={
     cartLoad,

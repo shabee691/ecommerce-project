@@ -27,7 +27,21 @@ const mongoose=require("mongoose")
         type:Boolean,
         default:false,
         required:true
-    }
+    },
+    resetToken: String,
+    resetTokenExpiry: Date,
+    wallet:{
+        type:Number,
+        default:0
+},
+    walletHistory:[{
+    date:{
+        type:Date
+    },
+    amount:{
+        type:Number,
+    },
+}]
 
    
      

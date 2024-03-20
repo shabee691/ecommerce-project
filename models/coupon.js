@@ -30,7 +30,7 @@ const couponSchema = new mongoose.Schema({
     },
     usedUsers: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
+        ref: "signupdata",
     }],
     isBlocked: {
         type: Boolean,

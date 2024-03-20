@@ -1,4 +1,5 @@
 const Coupon = require("../../models/coupon")
+const Cart = require("../../models/cart")
 const couponLoad = async (req,res)=>{
     try{
         const coupon= await Coupon.find({})
@@ -87,19 +88,60 @@ const couponDelete = async (req,res)=>{
     }
 }
 const couponCheck= async (req,res)=>{
-    try{
-        const user = req.session.user_id
-        const couponcode= req.body.coupon
-    }
-    catch(err){
-
+    try {
+        const userId = req.session.user_id;
+        const couponcode = req.body.coupon;
+        const currentDate = new Date()
+        const cartData = await Cart.findOne({user:userId})
+        const cartTotal = cartData.product.reduce((acc,val)=>acc+val.totalPrice,0)
+        const coupondata = await Coupon.findOne({couponCode:couponcode})
+        console.log(coupondata);
+        if(coupondata){
+            if(currentDate >= coupondata.activationDate && currentDate <= coupondata.expiryDate){
+                const exists = coupondata.usedUsers.includes(userId)
+                if(!exists){
+                    if(cartTotal>=coupondata.criteriaAmount){
+                        await Coupon.findOneAndUpdate({couponCode:couponcode},{$push:{usedUsers:userId}})
+                        await Cart.findOneAndUpdate({user:userId},{$set:{couponDiscount:coupondata._id}})
+                        res.json({coupon:true})
+                    }else{
+                        res.json({coupon:'amountIssue'})
+                    }
+                }else{
+                    res.json({coupon:'used'})
+                }
+            }else{
+                res.json({coupon:'notAct'})
+            }
+        }else{
+            res.json({coupon:false})
+        }
+        
+    } catch (error) {
+        console.log(error);
     }
 }
+const removecoupon = async (req,res)=>{
+    try {
+        const userId = req.session.user_id;
+        const cartData = await Cart.findOne({user:userId})
+        await Coupon.findOneAndUpdate({_id:cartData.couponDiscount},{$pull:{usedUsers:userId}})
+        await Cart.findOneAndUpdate({user:userId},{$set:{couponDiscount:0}})
+        res.json({remove:true})
+
+    } catch (error) {
+        console.log(error.message);
+        res.render('500Error')
+    }
+}
+
 module.exports={
     couponLoad,
     addcouponLoad,
     addcouponPost,
     couponDelete,
     editcouponLoad,
-    editcouponPost
+    editcouponPost,
+    couponCheck,
+    removecoupon
 }

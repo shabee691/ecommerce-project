@@ -159,11 +159,9 @@ if (phone === '') {
 
 	   
 
-    $(document).ready(function () {
+  $(document).ready(function () {
     $("#placeOrderBtn").on("click", function (event) {
         var formData = $("#orderForm").serialize();
-        event.preventDefault();
-
         console.log(formData,"is getting")
         $.ajax({
             type: "POST",
@@ -172,10 +170,9 @@ if (phone === '') {
             success: function (response) {
                 console.log(response);
                 if (response.placed == true) {
-                    window.location.href = '/success';
-                }else if(response.wallet == false){
-                        swal.fire("Oops, it looks like your wallet balance is too low to place this order !!", "", "error")
-                    }
+                    
+                    window.location.href =`/success`;
+                }
 				 else {
                     razorpayPayment(response.order);
                 }

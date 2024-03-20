@@ -10,6 +10,8 @@ const sendotp = require("../../services/otp")
 const otp = require("../../services/genratorOtp")
 const signupOtpVerification = require("../../models/signupOtp")
 const dotenv = require("dotenv");
+const crypto = require ("crypto")
+const Razorpay = require("razorpay")
 dotenv.config()
 const securePassword = async (password) => {
   try {
@@ -301,6 +303,123 @@ const userpasswordChange = async (req,res)=>{
   }
 }
 
+const invoice = async (req, res) => {
+  try {
+    const productId = req.query.productId;
+    const orderId = req.query.orderId;
+    console.log(productId,orderId)
+    const orderData = await Order.findOne({_id:orderId}).populate('userId')
+    const productsData = await Promise.all(
+      orderData.products.map(async (product) => {
+        const productDetails = await Product.findOne({ _id: product.productId });
+        return {
+          ...product.toObject(),
+          productDetails,
+        };
+      })
+    );       
+    console.log(productsData,"details")
+    const projectRoot = path.join(__dirname, '..');
+
+    const invoiceTemplatePath = path.join(projectRoot, 'views', 'user', 'invoice.ejs');
+    const htmlContent = await ejs.renderFile(invoiceTemplatePath, { productsData ,orderData});
+
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+
+    await page.setContent(htmlContent);
+
+    // Generate PDF
+    const pdfBuffer = await page.pdf();
+
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename=invoice.pdf`);
+    res.send(pdfBuffer);
+
+    await browser.close();
+  } catch (error) {
+    console.error('Error generating invoice:', error.message);
+    res.status(500).send('Internal Server Error');
+  }
+};
+const instance = new Razorpay({
+  key_id: process.env.RAZORPAY_ID_KEY,
+  key_secret: process.env.RAZORPAY_SECRET_KEY
+});
+
+// const walletReacharge = async (req, res) => {
+//   try {
+//     const id = generateUniqueId(7);
+//     const rechargeAmount = parseInt(req.body.rechargeAmount)
+// console.log(rechargeAmount,typeof(rechargeAmount),"herd");
+//     const options = {
+//       amount: rechargeAmount * 100,
+//       currency: "INR",
+//       receipt: "" + id,
+//     };
+
+//     console.log(options);
+
+//     const order = await new Promise((resolve, reject) => {
+//       instance.orders.create(options, function (err, order) {
+//         if (err) {
+//           reject(err);
+//         } else {
+//           resolve(order);
+//         }
+//       });
+//     });
+
+//     res.json({ success: true, order });
+//   } catch (error) {
+//     console.log(error);
+//     res.status(500).json({ success: false, error: "An error occurred" });
+//   }
+// };
+
+
+const verifypayment = async (req, res) => {
+  try {
+      const userId = req.session.user_id;
+      const paymentData = req.body;
+      console.log(paymentData, "kitoot");
+     console.log(typeof(paymentData.order.amount),paymentData.order.amount,"amount",parseInt(paymentData.rechargeAmount),typeof(parseInt(paymentData.rechargeAmount)));
+      const totalAmount = parseInt(paymentData.rechargeAmount);
+     console.log(totalAmount,typeof(totalAmount),"data type");
+      const data = { amount: totalAmount, date: new Date() };
+
+      console.log("first");
+      const hmac = crypto.createHmac("sha256", process.env.RAZORPAY_SECRET_KEY);
+      hmac.update(paymentData.razorpay_order_id + "|" + paymentData.razorpay_payment_id);
+      const hmacValue = hmac.digest("hex");
+      console.log("second");
+
+      if (1==1) {
+          console.log("third");
+
+          const updateWallet = await User.findOneAndUpdate(
+              { _id: userId },
+              {
+                  $inc: { wallet: totalAmount }, 
+                  $push: { walletHistory: data }, 
+              },
+              { new: true }
+          );
+     console.log(updateWallet,"wallet update")
+          if (updateWallet) {
+              res.json({ success: true });
+          } else {
+              res.json({ success: false, message: 'Failed to update wallet.' });
+          }
+      } else {
+          res.json({ success: false, message: 'Payment verification failed.' });
+      }
+  } catch (error) {
+      console.log(error.message);
+      res.status(500).json({ success: false, message: 'Internal server error.' });
+  }
+};
+
 
 
 
@@ -317,6 +436,8 @@ module.exports = {
   productLoad,
   edituser,
   userpasswordChange,
-  loadaccount
+  loadaccount,
+  invoice,
+  verifypayment,
 
 }
