@@ -7,6 +7,7 @@ const wishlistController = require("../controllers/wishlistController")
 const addressController =require ("../controllers/addressController") 
 const couponController = require ("../controllers/couponController")
 const orderController = require("../controllers/orderController")
+const reviewController = require("../controllers/reviewController")
 
 
 
@@ -41,9 +42,10 @@ userRouter  .get("/",userController.homeLoad)
             .post("/removecoupon",couponController.removecoupon)
             .post("'/cancelproduct",orderController.cancelproduct)
             .post("/verifypayment",orderController.verifypayment)
-            .get("/invoice",userController.invoice)
             .post('/returnproduct',orderController.returnproduct)
             .get('/search',userController.productSearch)
+            .get('/editReview',reviewController.editReviewLoad)
+            .post('/submit-review',reviewController.addreview)
             
             
             

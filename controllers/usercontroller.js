@@ -10,6 +10,7 @@ const bcrypt = require("bcrypt")
 const sendotp = require("../services/otp")
 const otp = require("../services/genratorOtp")
 const signupOtpVerification = require("../models/signupOtp")
+const Review = require("../models/review")
 const dotenv = require("dotenv");
 const crypto = require ("crypto")
 const Razorpay = require("razorpay")
@@ -225,7 +226,7 @@ const productLoad = async (req,res)=>{
     const user = await Userss.find({_id:req.session.user_id})
     const id = req.query.id
     const product = await Product.findOne({_id:id})
-    const review = []
+    const review = await Review.find({productId:id}).populate('userId');
     const date = Date.now()
     
    res.render("product",{product,user,review,date}) 
@@ -305,45 +306,7 @@ const userpasswordChange = async (req,res)=>{
   }
 }
 
-const invoice = async (req, res) => {
-  try {
-    const productId = req.query.productId;
-    const orderId = req.query.orderId;
-    console.log(productId,orderId)
-    const orderData = await Order.findOne({_id:orderId}).populate('userId')
-    const productsData = await Promise.all(
-      orderData.products.map(async (product) => {
-        const productDetails = await Product.findOne({ _id: product.productId });
-        return {
-          ...product.toObject(),
-          productDetails,
-        };
-      })
-    );       
-    console.log(productsData,"details")
-    const projectRoot = path.join(__dirname, '..');
 
-    const invoiceTemplatePath = path.join(projectRoot, 'views', 'user', 'invoice.ejs');
-    const htmlContent = await ejs.renderFile(invoiceTemplatePath, { productsData ,orderData});
-
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
-
-    await page.setContent(htmlContent);
-
-    // Generate PDF
-    const pdfBuffer = await page.pdf();
-
-    res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', `attachment; filename=invoice.pdf`);
-    res.send(pdfBuffer);
-
-    await browser.close();
-  } catch (error) {
-    console.error('Error generating invoice:', error.message);
-    res.status(500).send('Internal Server Error');
-  }
-};
 const productSearch = async(req,res)=>{
   try {
       const productname = req.query.input.toLowerCase();
@@ -374,7 +337,6 @@ module.exports = {
   edituser,
   userpasswordChange,
   loadaccount,
-  invoice,
   productSearch 
 
 }

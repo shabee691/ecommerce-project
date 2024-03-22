@@ -2,6 +2,7 @@
 const Category = require ("../models/categories")
 const USerss = require("../models/signup")
 const Product = require("../models/addproduct")
+const Order = require("../models/order")
 
 
 const Dashboardget = async function (req,res) {
@@ -157,6 +158,47 @@ catch (err){
   
 }
 
+const orderLoad = async (req,res)=>{
+try{
+ const order =await Order.find({}).sort({parchaseDate:-1})
+ res.render("order",{order})
+}catch(err){
+  console.log(err)
+}
+}
+const showorderLoad = async(req,res)=>{
+  try {
+    const id=req.query.id;
+    const order=await Order.findOne({_id:id}).populate('products.productId')
+    res.render('showorder',{order})
+} catch (error) {
+    console.log(error);
+}
+}
+
+const ProductStatus = async (req,res)=>{
+  try {
+    const productid=req.body.productId;
+    const productstatus=req.body.newStatus;
+    const updateOrder=await Order.findOneAndUpdate(
+        {
+            'products._id':productid
+        },
+        {
+            $set:{
+                'products.$.productstatus':productstatus,
+                 status:productstatus   
+            }
+        },
+        {new:true}
+    );
+    res.json({success:true})
+    console.log(updateOrder,"order",productstatus)
+} catch (error) {
+    console.log(error);
+}
+}
+
 
 
 
@@ -176,7 +218,10 @@ module.exports = {
     editcategoryLaod,
     editcategoryPost,
     usersget,
-    deleteCategory
+    deleteCategory,
+    orderLoad,
+    showorderLoad,
+    ProductStatus
    
     
     

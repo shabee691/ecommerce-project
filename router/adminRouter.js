@@ -45,6 +45,10 @@ adminRouter .get("/banner",bannerController.bannerLoad)
             .get("/editbanner",bannerController.editbannerLoad)
             .post("/editbanner",bannerUpload.single('image'),bannerController.editbannerPost)  
             .get("/bannerdelete/:id",bannerController.bannerdelete)    
+//Order
+adminRouter .get("/order",adminController.orderLoad)
+            .get('/showorder',adminController.showorderLoad) 
+            .post('/updateProductStatus',adminController.ProductStatus)           
 
 
 module.exports = adminRouter;
