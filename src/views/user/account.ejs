@@ -96,8 +96,8 @@
 					<div class="row">
 						<div class="col-md-6">
 							<ol class="breadcrumb">
-								<li class="breadcrumb-item"><a href="index.html">Home</a></li>
-								<li class="breadcrumb-item"><a href="#">Shop</a></li>
+								<li class="breadcrumb-item"><a href="/">Home</a></li>
+								<li class="breadcrumb-item"><a href="shop">Shop</a></li>
 								<li class="breadcrumb-item active" aria-current="page">My Account</li>
 							</ol>
 						</div>
@@ -131,10 +131,6 @@
 									<li class="nav-item">
 										<a class="nav-link" id="tab-address-link" data-toggle="tab" href="#tab-address"
 											role="tab" aria-controls="tab-address" aria-selected="false">Adresses</a>
-									</li>
-									<li class="nav-item">
-										<a class="nav-link" id="tab-account-link" data-toggle="tab" href="#tab-account"
-											role="tab" aria-controls="tab-account" aria-selected="false">Wallet</a>
 									</li>
 									<li class="nav-item">
 										<a class="nav-link" href="/logout">logout</a>
@@ -312,44 +308,7 @@
 												  No Address available.
 												</div>
 											  <% } %>											
-									</div><!-- .End .tab-pane -->
-
-									<div class="tab-pane fade" id="tab-account" role="tabpanel" aria-labelledby="tab-account-link">
-										<div class="container mt-4" id="wallethistory" style="max-width: 800px;">
-										  <div class="row mb-4">
-											<div class="col ">
-											  <h3>Current Balance</h3>
-											  <p class="display-4 text-success">₹<span id="wallet-balance"><%= userData.wallet %></span></p>
-											</div>
-											<div class="col text-right">
-											  <button id="rechargeBtn" class="btn btn-primary">Recharge Wallet</button>
-											</div>
-										  </div>
-									  
-										  <% if (userData.walletHistory && userData.walletHistory.length > 0) { %>
-											<div class="list-group">
-											  <% for (let i = userData.walletHistory.length - 1; i >= 0; i--) { %>
-												<div class="list-group-item">
-												  <div class="d-flex w-100 justify-content-between">
-													<p class="mb-1"><strong>Date:</strong> <%= userData.walletHistory[i].date.toISOString().split('T')[0] %></p>
-													<% if (userData.walletHistory[i].amount > 0) { %>
-													  <p class="mb-1 text-success">Credited</p>
-													<% } else { %>
-													  <p class="mb-1 text-danger">Debited</p>
-													<% } %>
-													<p class="mb-1"><strong>Amount:</strong> ₹<%= userData.walletHistory[i].amount %></p>
-												  </div>
-												</div>
-											  <% } %>
-											</div>
-										  <% } else { %>
-											<div class="alert alert-info" role="alert">
-											  No transaction history available.
-											</div>
-										  <% } %>
-										</div>
-									  </div>
-									  
+									</div><!-- .End .tab-pane -->									  
 							</div><!-- End .col-lg-9 -->
 						</div><!-- End .row -->
 					</div><!-- End .container -->

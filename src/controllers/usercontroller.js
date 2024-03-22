@@ -1,4 +1,5 @@
 const Banner = require("../../models/banner")
+const Order = require ("../../models/order")
 const Userss = require("../../models/signup")
 const Product = require("../../models/addproduct")
 const Cart = require ("../../models/cart")
@@ -155,67 +156,68 @@ const homeLoad = async(req,res)=>{
 }
 }
 const shopLaod = async (req,res)=>{
- try{
-  const categoryId = req.query.category;
-        const cart =  await Cart.findOne({user:req.session.user_id}).populate("product.productId")
-        const priceFilter = req.query.priceFilter === "low-to-high" ? 1 : -1;
-        const page = parseInt(req.query.page) || 1;
-        const itemsPerPage = 9;
-
-        const userData = await Userss.findOne({ _id: req.session.user_id });
-        const search = req.query.search;
-
-        let productData;
-
-        let filterCriteria = {
-            is_blocked: false,
-            isCategoryBlocked: false
-        };
-
-        if (search) {
-            filterCriteria.name = { $regex: search, $options: 'i' };
-        }
-
-        if (categoryId) {
-            filterCriteria.categoryId = categoryId;
-        }
-
-        const totalCount = await Product.countDocuments(filterCriteria);
-
-        if (totalCount > 0) {
-            const totalPages = Math.ceil(totalCount / itemsPerPage);
-
-            productData = await Product.find(filterCriteria)
-                .populate('categoryId')
-                .sort({ price: priceFilter })
-                .skip((page - 1) * itemsPerPage)
-                .limit(itemsPerPage);
-
-            const category = await Category.find({});
-
-            res.render("shop", {
-                product: productData,
-                user: userData,
-                category,
-                totalPages,
-                currentPage: page,
-                cart
-            });
-        } else { 
-            res.render("shop", {
-                product: [],
-                user: userData,
-                category: [],
-                totalPages: 0,
-                currentPage: 0,
-                cart
-            });
-        }
-    } catch (error) {
-        console.error(error.message);
-        res.status(500).send('Internal Server Error');
+  try{
+    const categoryId = req.query.category;
+          const cart =  await Cart.findOne({user:req.session.user_id}).populate("product.productId")
+          const priceFilter = req.query.priceFilter === "low-to-high" ? 1 : -1;
+          const page = parseInt(req.query.page) || 1;
+          const itemsPerPage = 9;
+  
+          const userData = await Userss.findOne({ _id: req.session.user_id });
+          const search = req.query.search;
+  
+         
+  
+          let filterCriteria = {
+              is_blocked: false,
+              isCategoryBlocked: false
+          };
+  
+          if (search) {
+              filterCriteria.name = { $regex: search, $options: 'i' };
+          }
+  
+          if (categoryId) {
+              filterCriteria.categoryId = categoryId;
+          }
+  
+          const totalCount = await Product.countDocuments(filterCriteria);
+  
+          if (totalCount > 0) {
+              const totalPages = Math.ceil(totalCount / itemsPerPage);
+  
+              let productData = await Product.find()
+                  .populate('categoryId')
+                  .sort({ price: priceFilter })
+                  .skip((page - 1) * itemsPerPage)
+                  .limit(itemsPerPage);
+  
+              const category = await Category.find({});
+  
+              res.render("shop", {
+                  product: productData,
+                  user: userData,
+                  category,
+                  totalPages,
+                  currentPage: page,
+                  cart
+              });
+          } else { 
+              res.render("shop", {
+                  product: [],
+                  user: userData,
+                  category: [],
+                  totalPages: 0,
+                  currentPage: 0,
+                  cart
+              });
+          }
+      } catch (error) {
+          console.error(error.message);
+          res.status(500).send('Internal Server Error');
+      }
     }
-}
+    
 
 const productLoad = async (req,res)=>{
   try{
@@ -237,7 +239,7 @@ const loadaccount = async(req,res)=>{
       const user = req.session.user_id
       const userData = await Userss.findOne({_id:user})
       const  addresses = await address.findOne({user:user})
-      const orders = []
+      const orders = await Order.find({userId:req.session.user_id}).sort({purchaseDate:-1})
       // const orders = await Order.find({userId:req.session.user_id})
       const CouponData = await coupon.find({})    
       res.render('account',{userData,addresses,orders,CouponData,user})
@@ -342,85 +344,20 @@ const invoice = async (req, res) => {
     res.status(500).send('Internal Server Error');
   }
 };
-const instance = new Razorpay({
-  key_id: process.env.RAZORPAY_ID_KEY,
-  key_secret: process.env.RAZORPAY_SECRET_KEY
-});
-
-// const walletReacharge = async (req, res) => {
-//   try {
-//     const id = generateUniqueId(7);
-//     const rechargeAmount = parseInt(req.body.rechargeAmount)
-// console.log(rechargeAmount,typeof(rechargeAmount),"herd");
-//     const options = {
-//       amount: rechargeAmount * 100,
-//       currency: "INR",
-//       receipt: "" + id,
-//     };
-
-//     console.log(options);
-
-//     const order = await new Promise((resolve, reject) => {
-//       instance.orders.create(options, function (err, order) {
-//         if (err) {
-//           reject(err);
-//         } else {
-//           resolve(order);
-//         }
-//       });
-//     });
-
-//     res.json({ success: true, order });
-//   } catch (error) {
-//     console.log(error);
-//     res.status(500).json({ success: false, error: "An error occurred" });
-//   }
-// };
-
-
-const verifypayment = async (req, res) => {
+const productSearch = async(req,res)=>{
   try {
-      const userId = req.session.user_id;
-      const paymentData = req.body;
-      console.log(paymentData, "kitoot");
-     console.log(typeof(paymentData.order.amount),paymentData.order.amount,"amount",parseInt(paymentData.rechargeAmount),typeof(parseInt(paymentData.rechargeAmount)));
-      const totalAmount = parseInt(paymentData.rechargeAmount);
-     console.log(totalAmount,typeof(totalAmount),"data type");
-      const data = { amount: totalAmount, date: new Date() };
+      const productname = req.query.input.toLowerCase();
+      console.log(productname);
+      const matchingProducts = await Product.find({
+          name: { $regex: productname, $options: 'i' } 
+      });
+      console.log(matchingProducts.length)
+      res.json({ suggestions: matchingProducts });
 
-      console.log("first");
-      const hmac = crypto.createHmac("sha256", process.env.RAZORPAY_SECRET_KEY);
-      hmac.update(paymentData.razorpay_order_id + "|" + paymentData.razorpay_payment_id);
-      const hmacValue = hmac.digest("hex");
-      console.log("second");
-
-      if (1==1) {
-          console.log("third");
-
-          const updateWallet = await User.findOneAndUpdate(
-              { _id: userId },
-              {
-                  $inc: { wallet: totalAmount }, 
-                  $push: { walletHistory: data }, 
-              },
-              { new: true }
-          );
-     console.log(updateWallet,"wallet update")
-          if (updateWallet) {
-              res.json({ success: true });
-          } else {
-              res.json({ success: false, message: 'Failed to update wallet.' });
-          }
-      } else {
-          res.json({ success: false, message: 'Payment verification failed.' });
-      }
   } catch (error) {
-      console.log(error.message);
-      res.status(500).json({ success: false, message: 'Internal server error.' });
+      console.log(error);
   }
-};
-
-
+}
 
 
 
@@ -438,6 +375,6 @@ module.exports = {
   userpasswordChange,
   loadaccount,
   invoice,
-  verifypayment,
+  productSearch 
 
 }

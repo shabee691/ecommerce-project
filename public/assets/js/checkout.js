@@ -170,8 +170,8 @@ if (phone === '') {
             success: function (response) {
                 console.log(response);
                 if (response.placed == true) {
-                    
-                    window.location.href =`/success`;
+                    const id = response.orderId;
+                    window.location.href =`/success?id=${id}`;
                 }
 				 else {
                     razorpayPayment(response.order);
@@ -188,10 +188,10 @@ if (phone === '') {
 function razorpayPayment(order) {
     console.log(order,"tihiu");
     var options = {
-        "key": "rzp_test_6nfEH21z7G2Wtu",
+        "key": "rzp_test_VgjxhB2zYVcgXR",
         "amount": order.amount,
         "currency": "INR",
-        "name": "Furni.Ltd",
+        "name": "Ezycart.Ltd",
         "description": "Test Transaction",
         "image": "",
         "order_id": order.id,
@@ -199,8 +199,8 @@ function razorpayPayment(order) {
             verifyPayment(response, order);
 			},
 			"prefill": {
-				"name": "Furni Ltd",
-				"email": "furniworld@gmail.com",
+				"name": "ezycart Ltd",
+				"email": "ecommercecart7@gmail.com",
 				"contact": "9999999999"
 			},
 			"notes": {
@@ -216,7 +216,6 @@ function razorpayPayment(order) {
 }
 
 function verifyPayment(payment, order) {
-
     $.ajax({
         url: "/verifypayment",
         method: "post",
@@ -226,7 +225,8 @@ function verifyPayment(payment, order) {
         },
         success: (response) => {
             if (response.placed == true) {
-                window.location.href = '/success'
+                const id = response.orderId;
+                window.location.href =`/success?id=${id}`;
             } else {
                 swal.fire({
                     positon: "center",

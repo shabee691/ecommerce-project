@@ -40,8 +40,10 @@ userRouter  .get("/",userController.homeLoad)
             .post('/checkcoupon',couponController.couponCheck)
             .post("/removecoupon",couponController.removecoupon)
             .post("'/cancelproduct",orderController.cancelproduct)
-            .post("/verypayment",userController.verifypayment)
+            .post("/verifypayment",orderController.verifypayment)
             .get("/invoice",userController.invoice)
+            .post('/returnproduct',orderController.returnproduct)
+            .get('/search',userController.productSearch)
             
             
             

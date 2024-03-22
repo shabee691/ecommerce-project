@@ -215,6 +215,8 @@
 												<tr>
 													<th>Product</th>
 													<th>Total</th>
+													
+														
 												</tr>
 											</thead>
 											<% cartData.product.forEach(product=> { %>
@@ -235,7 +237,7 @@
 													<td>Shipping:</td>
 													<td>Free shipping</td>
 												</tr>
-												<% if (cartData.couponDiscount!=0 ) { %>
+												<% if (cartData.couponDiscount !=0 ) { %>
 													<tr>
 														<td class="text-danger">Coupon Discount:</td>
 														<td id="disamount" class="text-danger">-<%= disamo %></td>
@@ -250,29 +252,7 @@
 											</tbody>
 										</table>
 
-										<div class="accordion-summary" id="accordion-payment">
-											<div class="card">
-												<div class="card-body">
-													<%if(cartData.user.wallet>=discount){%>
-													<div class="d-flex align-items-center">
-														<div class="mr-2">
-															<input required type="radio"  id="walletRadio" name="payment" value="wallet" />
-														</div>
-														<label class="d-block text-dark" for="walletRadio">Wallet</label>
-													</div>
-													<%}else{%>
-														<div class="d-flex align-items-center">
-															<div class="mr-2">
-																<input required type="radio" disabled  id="walletRadio" name="payment" value="wallet" />
-															</div>
-															<label class="d-block text-dark" for="walletRadio">Wallet <span class="text-danger text-sm">(Due to insufficient balance in wallet)</span></label>
-														</div>
-														<%}%>
-												</div>
-											</div>
-										
-											
-										
+										<div class="accordion-summary" id="accordion-payment">																										
 											<div class="card">
 												<div class="card-body">
 													<div class="d-flex align-items-center">

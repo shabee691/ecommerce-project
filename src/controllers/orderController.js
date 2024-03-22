@@ -5,6 +5,7 @@ const Product = require("../../models/addproduct")
 const Order = require("../../models/order")
 const Razorpay = require("razorpay")
 const crypto = require("crypto")
+
 const instance = new Razorpay({
     key_id: process.env.RAZORPAY_ID_KEY,
     key_secret: process.env.RAZORPAY_SECRET_KEY
@@ -90,7 +91,7 @@ const placeorder =  async (req, res) => {
         receipt: "" + orderData._id,
       };
       console.log(options);
-      instance.orders.create(options, function (err, order) {
+     instance.orders.create(options, function (err, order) {
         res.json({ orderId, order });
       });
     } else {
@@ -101,6 +102,38 @@ const placeorder =  async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 }
+
+const verifypayment = async (req, res) => {
+  try {
+      const userId = req.session.user_id;
+      const paymentData = req.body;
+      console.log(paymentData, "kitoot");
+      const cartData = await Cart.findOne({ user: userId });
+
+      const hmac = crypto.createHmac("sha256", process.env.RAZORPAY_SECRET_KEY); 
+      hmac.update(paymentData.razorpay_order_id + "|" + paymentData.razorpay_payment_id);
+      const hmacValue = hmac.digest("hex");
+
+      if (hmacValue === paymentData.razorpay_signature) { 
+          for (const productData of cartData.product) {
+              const { productId, quantity } = productData;
+              await Product.updateOne({ _id: productId }, { $inc: { quantity: -quantity } });
+          }
+      }
+
+      await Order.findByIdAndUpdate(
+          { _id: paymentData.order.receipt },
+          { $set: { status: "placed", paymentId: paymentData.payment.razorpay_payment_id } }
+      );
+
+      await Cart.deleteOne({ user: userId });
+      res.json({ placed: true });
+  } catch (error) {
+      console.log(error.message);
+      res.status(500).json({ error: error.message }); // Optionally, send an error response to the client
+  }
+};
+  
   const loadorderdetail = async (req, res) => {
     try {
       const id = req.query.id;
@@ -111,37 +144,6 @@ const placeorder =  async (req, res) => {
       console.log(error);
     }
   }
-  const verifypayment = async (req, res) => {
-    try {
-      const userId = req.session.user_id;
-      const paymentData = req.body
-      console.log(paymentData, "kitoot");
-      const cartData = await Cart.findOne({ user: userId });
-  
-      const hmac = crypto.createHmac("sha256", process.env.RAZORPAY_SECRET_KEY);
-      hmac.update(paymentData.razorpay_order_id + "|" + paymentData.razorpay_payment_id);
-      const hmacValue = hmac.digest("hex");
-  
-      if (hmacValue == paymentData.razorpay_signature) {
-        for (const productData of cartData.product) {
-          const { productId, quantity } = productData;
-          await Product.updateOne({ _id: productId }, { $inc: { quantity: -quantity } });
-        }
-      }
-  
-      await Order.findByIdAndUpdate(
-        { _id: paymentData.order.receipt },
-        { $set: { status: "placed", paymentId: paymentData.payment.razorpay_payment_id } }
-      );
-  
-      await Cart.deleteOne({ user: userId });
-      res.json({ placed: true });
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
-  
- 
   
   //cancel product 
   const cancelproduct = async (req, res) => {

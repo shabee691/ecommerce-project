@@ -48,13 +48,12 @@ const addCart = async (req, res) => {
                 quantity: 1,
                 totalPrice: productData.price
             });
-            await Cart.findOneAndUpdate(
-                {$set:{user:UserActive,couponDiscount:0}}
-            )
-        }
-
-        // Save the updated cart
+           
+        } 
+        cartData.couponDiscount = 0;
         await cartData.save();
+        // Save the updated cart
+       
 
         return res.json({ success: true, stock: true });
     } catch (err) {
