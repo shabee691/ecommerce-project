@@ -1,6 +1,6 @@
-const Product = require("../../models/addproduct")
-const wishlist = require("../../models/wishlist")
-const Cart = require("../../models/cart")
+const Product = require("../models/addproduct")
+const wishlist = require("../models/wishlist")
+const Cart = require("../models/cart")
 const wishlistLoad = async(req,res)=>{
 try{ 
         const user_id = req.session.user_id; 

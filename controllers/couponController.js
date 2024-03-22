@@ -1,5 +1,5 @@
-const Coupon = require("../../models/coupon")
-const Cart = require("../../models/cart")
+const Coupon = require("../models/coupon")
+const Cart = require("../models/cart")
 const couponLoad = async (req,res)=>{
     try{
         const coupon= await Coupon.find({})

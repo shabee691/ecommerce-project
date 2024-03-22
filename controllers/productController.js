@@ -1,5 +1,5 @@
- const Category = require ("../../models/categories")
-const Product =require ("../../models/addproduct")
+ const Category = require ("../models/categories")
+const Product =require ("../models/addproduct")
 const Sharp= require("sharp")
 
 const productload = async function (req,res){

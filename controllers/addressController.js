@@ -1,4 +1,4 @@
-const address = require("../../models/address")
+const address = require("../models/address")
 const addaddress= async (req,res)=>{
     try {
         const userId = req.session.user_id;

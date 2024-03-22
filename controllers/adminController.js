@@ -1,7 +1,7 @@
 
-const Category = require ("../../models/categories")
-const USerss = require("../../models/signup")
-const Product = require("../../models/addproduct")
+const Category = require ("../models/categories")
+const USerss = require("../models/signup")
+const Product = require("../models/addproduct")
 
 
 const Dashboardget = async function (req,res) {

@@ -1,8 +1,6 @@
-const Cart = require ("../../models/cart")
-const Product = require("../../models/addproduct")
-const address = require ("../../models/address")
-const User = require("../../models/signup")
-const coupon=require("../../models/coupon")
+const Cart = require ("../models/cart")
+const Product = require("../models/addproduct")
+const address = require ("../models/address")
 const cartLoad = async (req,res)=>{
     try{ 
         const user_id = req.session.user_id; 

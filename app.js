@@ -8,8 +8,8 @@ const session=require("express-session")
 require("dotenv").config()
 
 
-const userRouter=require("./src/router/userRouter")//USer router
-const adminRouter =require("./src/router/adminRouter") //admin Router
+const userRouter=require("./router/userRouter")//USer router
+const adminRouter =require("./router/adminRouter") //admin Router
 
 
 

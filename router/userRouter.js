@@ -1,6 +1,6 @@
 const express=require("express")
 const userRouter=express()
-userRouter.set("views","./src/views/user")
+userRouter.set("views","./views/user")
 const userController = require("../controllers/usercontroller")
 const cartController = require ("../controllers/cartController")
 const wishlistController = require("../controllers/wishlistController")

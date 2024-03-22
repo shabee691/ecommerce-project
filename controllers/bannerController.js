@@ -1,4 +1,4 @@
-const Banner = require("../../models/banner")
+const Banner = require("../models/banner")
 
 const bannerLoad = async (req,res)=>{
 try{
