@@ -171,7 +171,7 @@ if (phone === '') {
                 console.log(response);
                 if (response.placed == true) {
                     const id = response.orderId;
-                    window.location.href =`/success?id=${id}`;
+                    window.location.href =`/success`;
                 }
 				 else {
                     razorpayPayment(response.order);
@@ -226,7 +226,7 @@ function verifyPayment(payment, order) {
         success: (response) => {
             if (response.placed == true) {
                 const id = response.orderId;
-                window.location.href =`/success?id=${id}`;
+                window.location.href =`/success`;
             } else {
                 swal.fire({
                     positon: "center",

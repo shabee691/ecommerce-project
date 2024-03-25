@@ -166,7 +166,7 @@ const verifypayment = async (req, res) => {
           amount: orderData.totalAmount,
           date: new Date()
         }
-        await User.findOneAndUpdate({ _id: userId }, { $inc: { wallet: orderData.totalAmount }, $push: { walletHistory: data } })
+        await User.findOneAndUpdate({ _id: userId }, { $inc: { wallet: orderData.totalAmount },  })
       }
       res.json({ cancel: true })
       console.log(productId, "product Id");
