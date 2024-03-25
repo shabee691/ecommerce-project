@@ -5,8 +5,7 @@ const wishlistLoad = async(req,res)=>{
 try{ 
         const user_id = req.session.user_id; 
         const wishlistData =  await wishlist.findOne({user:user_id}).populate("product.productId")
-        
-          res.render('wishlist',{wishlist:wishlistData})
+          res.render('wishlist',{wishlist:wishlistData,})
 }catch (error) {
           console.log(error);
 }
@@ -34,8 +33,8 @@ const addWishlist = async (req,res)=>{
                     { user: UserActive },
                     { $pull: { product: { productId: product_id } } }
                 );
-                return res.json({success:true})
-            } else {
+                return res.json({success:false})
+            } else { 
         
         const data = {
             productId: product_id,

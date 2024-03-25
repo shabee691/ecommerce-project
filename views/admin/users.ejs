@@ -191,6 +191,9 @@
                                                 <th scope="col">
                                                     <center>Verified</center>
                                                 </th>
+                                                <th scope="col">
+                                                    <center>Block / Unblock</center>
+                                                </th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -218,6 +221,16 @@
                                                                 <span style="color:red ;">false</span>
 
                                                             <%}%>
+                                                        </td>
+                                                        <td align="center">
+                                                            <% if (users[i].is_blocked) { %>
+                                                                <a class="unblock-user" data-user-id="<%= users[i]._id %>"><span
+                                                                        class="badge rounded-pill alert-success">unblock</span></a>
+                                                                <% } else { %>
+                                                                    <a class="block-user"
+                                                                        data-user-id="<%= users[i]._id %>"><span
+                                                                            class="badge rounded-pill alert-warning">block</span></a>
+                                                                    <% } %>
                                                         </td>
 
 
@@ -266,7 +279,7 @@
         </footer>
     </main>
 
-    <!-- <script>
+    <script>
         document.querySelectorAll('.block-user, .unblock-user').forEach(function (element) {
             console.log(element);
             element.addEventListener('click', function (event) {
@@ -297,7 +310,7 @@
 
             });
         });
-    </script> -->
+    </script>
 
 
 

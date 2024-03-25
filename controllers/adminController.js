@@ -7,34 +7,56 @@ const Order = require("../models/order")
 
 const Dashboardget = async function (req,res) {
         
-            const totalRevenueNumber = []; // Replace with your actual revenue value
-            const ordercount = []; // Replace with your actual order count
-            const productcount = []; // Replace with your actual product count
-            const categorycount = []; // Replace with your actual category count
-            const monthlyRevenueNumber = []; // Replace with your actual monthly revenue
-            const orders = [
-              {
-                _id: "order1",
-                userId: { name: "John Doe" },
-                purchaseDate: "2024-01-25",
-                paymentMethod: "Credit Card",
-                products: [
-                  { name: "Product 1", price: 20 },
-                  { name: "Product 2", price: 30 },
-                ],
-              },
-              // Add more orders as needed
-            ];
-            
-            res.render("dashboard",
-            {
-                totalRevenueNumber,
-                ordercount,
-                productcount,
-                categorycount,
-                monthlyRevenueNumber,
-                orders,
-              })
+  try {
+    const ordercount = await Order.countDocuments();
+    const productcount = await Product.countDocuments();
+    const categorycount = await Category.countDocuments();
+    const order = await Order.find().populate('userId');
+
+    const totalrevenue = await Order.aggregate([
+        {
+            $match: {
+                'products.productstatus': 'Delivered' 
+            }
+        },
+        {
+            $group: {
+                _id: null,
+                totalrevenue: { $sum: "$totalAmount" }
+            }
+        }
+    ]);
+
+    const totalRevenueNumber = totalrevenue.map(result => result.totalrevenue)[0] || 0;
+
+    const currentMonth = new Date();
+    const startOfMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
+    const endOfMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1);
+
+    const monthlyrevenue = await Order.aggregate([
+        {
+            $match: {
+                'products.productstatus': 'Delivered', 
+                purchaseDate: {
+                    $gte: startOfMonth,
+                    $lt: endOfMonth
+                }
+            }
+        },
+        {
+            $group: {
+                _id: null,
+                monthlyrevenue: { $sum: "$totalAmount" }
+            }
+        }
+    ]);
+
+    const monthlyRevenueNumber = monthlyrevenue.map(result => result.monthlyrevenue)[0] || 0;
+
+    res.render('dashboard', { ordercount, productcount, categorycount, totalRevenueNumber, monthlyRevenueNumber, order });
+} catch (error) {
+    console.log(error);
+}
 }
 const Dashboardpost = async function (req,res){
     
@@ -84,7 +106,21 @@ const usersget = async function (req,res){
    }
 
 }
-
+const blockUser = async (req, res) => {
+    try {
+      const user = req.params.id;
+      const userValue = await USerss.findOne({ _id: user });
+      if (userValue.is_blocked) {
+        await USerss.updateOne({ _id: user }, { $set: { is_blocked: false } });
+      } else {
+        await USerss.updateOne({ _id: user }, { $set: { is_blocked: true } });
+        req.session.user_id = null;
+      }
+      res.json({ block: true });
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
 
 
 const addcategoryget = async function (req,res){
@@ -199,10 +235,78 @@ const ProductStatus = async (req,res)=>{
 }
 }
 
+const chartData = async (req, res) => {
+  try {
+      const salesData = await Order.aggregate([
+          {
+              $match: { "products.productstatus": "Delivered" }
+          },
+          {
+              $group: {
+                  _id: { $month: "$purchaseDate" },
+                  totalAmount: { $sum: "$totalAmount" },
+              },
+          },
+          {
+              $project: {
+                  _id: 0,
+                  month: "$_id",
+                  totalAmount: 1,
+              },
+          },
+          {
+              $sort: { month: 1 },
+          },
+      ]);
+
+      console.log(salesData);
+
+      res.json(salesData);
+  } catch (error) {
+      console.error('Error fetching data from database:', error.message);
+      res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+const paymentChartData = async (req, res) => {
+  try {
+      const paymentData = await Order.aggregate([
+          {
+              $match: { "products.productstatus": "Delivered" }
+          },
+          {
+              $group: {
+                  _id: "$paymentMethod",
+                  totalAmount: { $sum: "$totalAmount" },
+              }
+          },
+      ]);
+
+      console.log(paymentData);
+
+      res.json(paymentData);
+  } catch (error) {
+      console.error('Error fetching payment data from the database:', error.message);
+      res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
 
 
 
+const loadreport = async(req,res)=>{
+  try {
+  const startDate = req.query.startDate;
+  const endDate = req.query.endDate;
+  if (startDate && endDate) {
+       filteredSales = await Order.find({purchaseDate: { $gte: startDate, $lte: endDate }, "products.productstatus":"Delivered"} ).populate('userId');
+  }else{
+      filteredSales = await Order.find({"products.productstatus":"Delivered"} ).populate('userId');
 
+  }
+  res.render('report', { order: filteredSales ,startDate,endDate});
+  } catch (error) {
+      console.log(error);
+  }
+}
 
 
 
@@ -218,10 +322,14 @@ module.exports = {
     editcategoryLaod,
     editcategoryPost,
     usersget,
+    blockUser,
     deleteCategory,
     orderLoad,
     showorderLoad,
-    ProductStatus
+    ProductStatus,
+    chartData,
+    paymentChartData ,
+    loadreport
    
     
     

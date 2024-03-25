@@ -14,6 +14,8 @@ const bannerUpload = multer.BannerUplaod()
 adminRouter .get("/dashboard",adminController.Dashboardget)
             .post("/dashboard",)
             .get("/users",adminController.usersget)
+            .get('/report',adminController.loadreport)
+            .patch('/blockusers/:id',adminController.blockUser)
 //category
 adminRouter .get("/category",adminController.categoryget)
             .patch('/blockcategory/:id',adminController.blockCategory)
@@ -48,7 +50,9 @@ adminRouter .get("/banner",bannerController.bannerLoad)
 //Order
 adminRouter .get("/order",adminController.orderLoad)
             .get('/showorder',adminController.showorderLoad) 
-            .post('/updateProductStatus',adminController.ProductStatus)           
+            .post('/updateProductStatus',adminController.ProductStatus)     
+            .get('/chart',adminController.chartData)
+            .get('/paymentChart',adminController.paymentChartData)      
 
 
 module.exports = adminRouter;

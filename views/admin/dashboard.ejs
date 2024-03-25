@@ -29,7 +29,7 @@
             </div>
             <nav>
                 <ul class="menu-aside ">
-                    <li class="menu-item active"
+                    <li class="menu-item active">
                         <a class="menu-link" href="dashboard">
                             <i class="icon material-icons md-home"></i>
                             <span class="text">Dashboard</span>
@@ -246,8 +246,17 @@
                                             <th class="align-middle" scope="col">Payment Method</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                   
+                                    <% order.forEach(order => { %>
+                                        <% order.products.forEach(product => { %>
+                                            <tr>
+                                                <td><a class="fw-bold"><%= order._id.toString().substring(6, 12).toUpperCase() %></a></td>
+                                                <td><%= order?.userId?.name %></td>
+                                                <td><%= new Date(order.purchaseDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) %></td>
+                                                <td>$<%= product.price.toFixed(2) %></td>
+                                                <td><i class="material-icons md-payment font-xxl text-muted mr-5"></i> <%= order.paymentMethod %></td>
+                                            </tr>
+                                        <% }); %>
+                                    <% }); %>                                
                                     </tbody>
                                 </table>
                             </div>

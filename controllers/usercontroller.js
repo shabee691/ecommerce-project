@@ -11,6 +11,7 @@ const sendotp = require("../services/otp")
 const otp = require("../services/genratorOtp")
 const signupOtpVerification = require("../models/signupOtp")
 const Review = require("../models/review")
+const Wishlist = require("../models/wishlist")
 const dotenv = require("dotenv");
 const crypto = require ("crypto")
 const Razorpay = require("razorpay")
@@ -104,19 +105,29 @@ const loginpost = async (req, res) => {
     const email = req.body.email
     const password = req.body.password 
     const UserData = await Userss.findOne({email})
-    
-    if (UserData) {
-      if(UserData.Is_verified === true){
-        const passwordMatch = await bcrypt.compare(password,UserData.password)
-        if(passwordMatch){
-          req.session.user_id= UserData._id
-          res.redirect("/")
-        }
-        else{
-          res.render('login', { message: "Incorrect password" });
-        }
+          
+        if (UserData) {
+          if (UserData.Is_verified === true) {
+              if (UserData.is_blocked==true) {
+                  res.render('login', { message: "Your account is blocked by the admin." });
+                }else{
+                  const passwordMatch = await bcrypt.compare(password,UserData.password)
+              
+                if(passwordMatch){
+                  req.session.user_id= UserData._id
+                  res.redirect("/")
+                }
+                else{
+                  res.render('login', { message: "Incorrect password" });
+                }
+          }
+        }else{
+           sendOtpVerificationEmail(userData, res);
+           }
+        } else {
+        res.render('login', { message: "Email is not registered. Please register first." });
     }
-  }}
+      }
   catch (err) {
     console.log("loginpost",err)
 }
@@ -148,10 +159,13 @@ const homeLoad = async(req,res)=>{
   try {
     const user_id = req.session.user_id; 
     const cartData =await Cart.findOne({user:user_id}).populate("product.productId")
+    const wishlist = await Wishlist.findOne({user:user_id}).populate("product.productId")
     const userData = await Userss.findOne({_id:user_id})
     const banner = await Banner.find({})
+    const product = await Product.find({})
+  
 
-    res.render('home',{user:userData,cart:cartData,banner});
+    res.render('home',{user:userData,cart:cartData,banner,wishlist,product},);
 } catch (error) {
     console.log(error.message);
 }
@@ -238,14 +252,35 @@ const productLoad = async (req,res)=>{
 const loadaccount = async(req,res)=>{
   try {
       const user = req.session.user_id
+      
+      if(!user){
+       const addresses =[]
+        const UserData = []
+        const orders = []
+        const CouponData = []
+        const user = []
+
+       res.render("account",{userData:UserData,addresses,orders,CouponData,user})
+       
+    }
+    else{
+      const CouponData = await coupon.find({}) 
       const userData = await Userss.findOne({_id:user})
       const  addresses = await address.findOne({user:user})
       const orders = await Order.find({userId:req.session.user_id}).sort({purchaseDate:-1})
-      // const orders = await Order.find({userId:req.session.user_id})
-      const CouponData = await coupon.find({})    
-      res.render('account',{userData,addresses,orders,CouponData,user})
+      res.render("account",{userData,addresses,orders,CouponData,user});
+    }
   } catch (error) {
-      console.log(error);
+      res.status(500).send('session expired');
+      console.log(error)
+  }
+}
+const userLogout = async (req, res) => {
+  try {
+      req.session.destroy();
+      res.redirect('/login');
+  } catch (error) {
+      console.log(error.message);
   }
 }
 const edituser = async (req,res)=>{
@@ -337,6 +372,7 @@ module.exports = {
   edituser,
   userpasswordChange,
   loadaccount,
-  productSearch 
+  productSearch,
+  userLogout
 
 }

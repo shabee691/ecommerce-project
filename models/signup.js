@@ -28,6 +28,10 @@ const mongoose=require("mongoose")
         default:false,
         required:true
     },
+    is_blocked: {
+    type: Boolean,
+    default: false
+  },
     resetToken: String,
     resetTokenExpiry: Date,
     wallet:{

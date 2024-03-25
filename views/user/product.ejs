@@ -106,11 +106,11 @@
                                 <a href="#">Links</a>
                                 <ul>
                                     <li><a href="tel:#"><i class="icon-phone"></i>Call: +0123 456 789</a></li>
-                                    <li><a href="wishlist"><i class="icon-heart-o"></i>Wishlist <span>(3)</span></a>
+                                    <li><a href="wishlist"><i class="icon-heart-o"></i>Wishlist </a>
                                     </li>
                                     <li><a href="about">About Us</a></li>
                                     <li><a href="contact">Contact Us</a></li>
-                                    <li><a href="#signin-modal" data-toggle="modal"><i class="icon-user"></i>Login</a>
+                                    <li><a href="login"><i class="icon-user"></i>Login</a>
                                     </li>
                                 </ul>
                             </li>
@@ -128,7 +128,7 @@
                         </button>
 
                         <a href="/" class="logo">
-                            <img src=" /public/assets/imgs/theme/logo.png" alt="Molla Logo" width="105" height="25">
+                            <img src="public\assets\imgs\theme\Ezycart.png" alt="Molla Logo" width="105" height="25">
                         </a>
 
                         <nav class="main-nav">
@@ -189,21 +189,9 @@
                 <div class="container d-flex align-items-center">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="/">Home</a></li>
-                        <li class="breadcrumb-item"><a href="#">Products</a></li>
+                        <li class="breadcrumb-item"><a href="shop">Products</a></li>
                         <li class="breadcrumb-item active" aria-current="page">Default</li>
                     </ol>
-
-                    <nav class="product-pager ml-auto" aria-label="Product">
-                        <a class="product-pager-link product-pager-prev" href="#" aria-label="Previous" tabindex="-1">
-                            <i class="icon-angle-left"></i>
-                            <span>Prev</span>
-                        </a>
-
-                        <a class="product-pager-link product-pager-next" href="#" aria-label="Next" tabindex="-1">
-                            <span>Next</span>
-                            <i class="icon-angle-right"></i>
-                        </a>
-                    </nav><!-- End .pager-nav -->
                 </div><!-- End .container -->
             </nav><!-- End .breadcrumb-nav -->
 
@@ -292,8 +280,8 @@
                                 <div class="details-filter-row details-row-size">
                                     <label for="qty">Qty:</label>
                                     <div class="product-details-quantity">
-                                        <input type="number" id="qty" class="form-control" value="1" min="1" max="10"
-                                            step="1" data-decimals="0" required>
+                                        <input type="number" id="qty" class="form-control" value="1" min="1" max="1"
+                                            step="1" data-decimals="0" disabled required>
                                     </div><!-- End .product-details-quantity -->
                                 </div><!-- End .details-filter-row -->
 
@@ -301,10 +289,9 @@
                                     <a  class="btn-product btn-cart"
                                         onclick="addToCart('<%= product._id %>');"><span>add to cart</span></a>
 
-                                    <div class="details-action-wrapper">
-                                        <a onclick="addtoWishlist('<%= product._id%>')"  title="Wishlist"><i class="fa-solid fa-heart" style="color: #d03216;"></i><span>Add to
-                                                Wishlist</span></a>
-                                    </div><!-- End .details-action-wrapper -->
+                                        <button type="button" class="btn btn-outline-danger" onclick="addtoWishlist('<%= product._id %>')" data-toggle="modal" data-target="#wishlistModal<%= product._id %>">
+                                             Add to Wishlist
+                                         </button><!-- End .details-action-wrapper -->
                                 </div><!-- End .product-details-action -->
 
                                 <div class="product-details-footer">
@@ -389,7 +376,7 @@
                                                         <h4><a href="#"><%= reviewItem.userId.name %>.</a></h4>
                                                         <div class="ratings-container">
                                                             <div class="ratings">
-                                                                <!-- <div class="ratings-val" style="width:",<%= (reviewItem.rating * 20) + '%' %>"></div> -->
+                                                                
                                                             </div>
                                                         </div>
                                                         <% 
@@ -427,9 +414,9 @@
 
 
 
-                <script>
-function addToCart(productId) {
-    $.ajax({
+<script>
+    function addToCart(productId) {
+     $.ajax({
         url: '/addcart',
         method: 'patch',
         data: { productId },
@@ -472,10 +459,10 @@ function addToCart(productId) {
     });
 }
 
-                </script>
+ </script>
 
-                <script>
-                    function addtoWishlist(productId) {
+<script>
+    function addtoWishlist(productId) {
     $.ajax({
         url: '/addwishlist',
         method: 'patch',
@@ -495,14 +482,14 @@ function addToCart(productId) {
                     Swal.fire({
                     title: 'Login Required',
                     text: response.error || 'You want to login.',
-                    icon: 'warning',
+                    icon: 'warning',    
                     showCancelButton: true,
                     confirmButtonText: 'Login',
                     cancelButtonText: 'Cancel',
                 });}
                 else if(response.success===false){
                 swal.fire({
-                    title:"Product is already in wishlist",
+                    title:"Product Removed from wishlist ",
                     icon:'warning',
                     showCancelButton:true,
                     cancelButtonText:'cancel'
@@ -525,8 +512,7 @@ function addToCart(productId) {
             );
         }
     });
-}
-                </script>
+}</script>
 
 
 
@@ -543,7 +529,7 @@ function addToCart(productId) {
                 <div class="row">
                     <div class="col-sm-6 col-lg-3">
                         <div class="widget widget-about">
-                            <img src=" /public/assets/imgs/theme/logo.png" class="footer-logo" alt="Footer Logo" width="105"
+                            <img src="public\assets\imgs\theme\Ezycart.png" class="footer-logo" alt="Footer Logo" width="105"
                                 height="25">
                             <p>Praesent dapibus, neque id cursus ucibus, tortor neque egestas augue, eu vulputate magna
                                 eros eu erat. </p>
@@ -568,7 +554,7 @@ function addToCart(productId) {
                             <h4 class="widget-title">Useful Links</h4><!-- End .widget-title -->
 
                             <ul class="widget-list">
-                                <li><a href="about">About Molla</a></li>
+                                <li><a href="about">About Ezycart</a></li>
                                 <li><a href="#">How to shop on Molla</a></li>
                                 <li><a href="#">FAQ</a></li>
                                 <li><a href="contact">Contact us</a></li>

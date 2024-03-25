@@ -138,8 +138,9 @@ const verifypayment = async (req, res) => {
     try {
       const id = req.query.id;
       const orderData = await Order.findOne({ _id: id }).populate('products.productId')
+      const cart = await Cart.findOne({user:id}).populate('product.productId')
       
-      res.render('orderdetails', { order: orderData })
+      res.render('orderdetails', { order: orderData ,cart})
     } catch (error) {
       console.log(error);
     }

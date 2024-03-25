@@ -63,7 +63,7 @@
                                 <a href="#">Links</a>
                                 <ul>
                                     <li><a href="tel:#"><i class="icon-phone"></i>Call: +0123 456 789</a></li>
-                                    <li><a href="wishlist"><i class="icon-heart-o"></i>Wishlist <span>(...)</span></a></li>
+                                    <li><a href="wishlist"><i class="icon-heart-o"></i>Wishlist <span></span></a></li>
                                     <li><a href="about">About Us</a></li>
                                     <li><a href="contact">Contact Us</a></li>
                                     <li><a href="#signin-modal" data-toggle="modal"><i class="icon-user"></i>Login</a></li>
@@ -83,7 +83,7 @@
                         </button>
 
                         <a href="home" class="logo">
-                            <img src=" /public/assets/imgs/theme/logo.png" alt="Molla Logo" width="105" height="25">
+                            <img src="public\assets\imgs\theme\Ezycart.png" alt="Molla Logo" width="105" height="25">
                         </a>
 
                         <nav class="main-nav">
@@ -116,43 +116,10 @@
                     </div><!-- End .header-left -->
 
                     <div class="header-right">
-                        <div class="header-search">
-                            <a href="#" class="search-toggle" role="button" title="Search"><i class="icon-search"></i></a>
-                            <form action="#" method="get">
-                                <div class="header-search-wrapper">
-                                    <label for="q" class="sr-only">Search</label>
-                                    <input type="search" class="form-control" name="q" id="q" placeholder="Search in..." required>
-                                </div><!-- End .header-search-wrapper -->
-                            </form>
-                        </div><!-- End .header-search -->
-                        <div class="dropdown compare-dropdown">
-                            <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static" title="Compare Products" aria-label="Compare Products">
-                                <i class="icon-random"></i>
-                            </a>
-
-                            <div class="dropdown-menu dropdown-menu-right">
-                                <ul class="compare-products">
-                                    <li class="compare-product">
-                                        <a href="#" class="btn-remove" title="Remove Product"><i class="icon-close"></i></a>
-                                        <h4 class="compare-product-title"><a href="product"></a></h4>
-                                    </li>
-                                    <li class="compare-product">
-                                        <a href="#" class="btn-remove" title="Remove Product"><i class="icon-close"></i></a>
-                                        <h4 class="compare-product-title"><a href="product">White Long Skirt</a></h4>
-                                    </li>
-                                </ul>
-
-                                <div class="compare-actions">
-                                    <a href="#" class="action-link">Clear All</a>
-                                    <a href="#" class="btn btn-outline-primary-2"><span>Compare</span><i class="icon-long-arrow-right"></i></a>
-                                </div>
-                            </div><!-- End .dropdown-menu -->
-                        </div><!-- End .compare-dropdown -->
-
                         <div  class="dropdown cart-dropdown">
-                            <a class="dropdown-toggle" role="button"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static">
+                            <a href="cart" class="dropdown-toggle">
                                 <i class="icon-shopping-cart"></i>
-                                <span class="cart-count"></span>
+
                             </a>
                             <!-- here to change -->
 
@@ -218,11 +185,6 @@
 									</div><!-- End .product -->
 								</td>
 								<td class="price-col"><%=product.price %></td>
-                                <% if(product.quantity < 0){%>
-                                    <td class="stock-col"><span class="out-of-stock">Out of stock</span></td>
-                                <%}else{%>
-                                    <td class="stock-col"><span class="in-stock">in stock</span></td>
-                                <%}%>
 							</tr>
                         <%})%>
 						</tbody>
@@ -248,7 +210,7 @@
 	            	<div class="row">
 	            		<div class="col-sm-6 col-lg-3">
 	            			<div class="widget widget-about">
-	            				<img src=" /public/assets/imgs/theme/logo.png" class="footer-logo" alt="Footer Logo" width="105" height="25">
+	            				<img src="public\assets\imgs\theme\Ezycart.png" class="footer-logo" alt="Footer Logo" width="105" height="25">
 	            				<p>Praesent dapibus, neque id cursus ucibus, tortor neque egestas augue, eu vulputate magna eros eu erat. </p>
 
 	            				<div class="social-icons">
