@@ -11,11 +11,14 @@ const uplaod =multer.multerUplaod()
 const bannerUpload = multer.BannerUplaod()
 
 //adminRouter
-adminRouter .get("/dashboard",adminController.Dashboardget)
+adminRouter .get('/',adminController.loadadmin)
+            .post('/',adminController.verifyLogin)
+            .get("/dashboard",adminController.Dashboardget)
             .post("/dashboard",)
             .get("/users",adminController.usersget)
             .get('/report',adminController.loadreport)
             .patch('/blockusers/:id',adminController.blockUser)
+            .get('/logout',adminController.adminLogout)
 //category
 adminRouter .get("/category",adminController.categoryget)
             .patch('/blockcategory/:id',adminController.blockCategory)

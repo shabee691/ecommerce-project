@@ -3,6 +3,7 @@ const Category = require ("../models/categories")
 const USerss = require("../models/signup")
 const Product = require("../models/addproduct")
 const Order = require("../models/order")
+const bcrypt = require("bcrypt")
 
 
 const Dashboardget = async function (req,res) {
@@ -58,10 +59,14 @@ const Dashboardget = async function (req,res) {
     console.log(error);
 }
 }
-const Dashboardpost = async function (req,res){
-    
-} 
-
+const adminLogout = async (req, res) => {
+    try {
+        req.session.destroy();
+        res.redirect('/admin');
+    } catch (error) {
+        console.log(error.message);
+    }
+}
 const categoryget = async function (req,res) {
     try {
         const category = await Category.find()
@@ -308,13 +313,40 @@ const loadreport = async(req,res)=>{
   }
 }
 
+const loadadmin = async(req,res)=>{
+    try {
+        res.render('admin-login')
+    } catch (error) {
+        console.log(error);
+    }
+}
+const verifyLogin = async(req,res)=>{
+    try {
+        const email = req.body.email;
+        const password = req.body.password;
+        const adminData = await USerss.findOne({email:email});
 
+        if(adminData && adminData.is_admin){
+            const passwordMatch = await bcrypt.compare(password, adminData.password);
+            if(passwordMatch){
+                req.session.admin_id = adminData._id;
+                res.redirect('/admin/dashboard')
+            }else{
+                res.render('admin-login',{message:"Email and password are incorrect"});
+            }
+        }else{
+            res.render('admin-login',{message:"You are not admin"});
+        }
 
+    } catch (error) {
+        console.log(error);
+    }
+}
 
 
 module.exports = {
     Dashboardget,
-    Dashboardpost,
+    adminLogout,
     categoryget,
     blockCategory,
     addcategoryget,
@@ -329,7 +361,9 @@ module.exports = {
     ProductStatus,
     chartData,
     paymentChartData ,
-    loadreport
+    loadreport,
+    loadadmin,
+    verifyLogin
    
     
     

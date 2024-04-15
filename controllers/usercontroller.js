@@ -69,12 +69,13 @@ const signupPost = async (req, res) => {
     const userData = await user.save();
     console.log(userData);
     await signupotp(userData, res)
+    otpverificationget({userData})
   }
   catch (error) {
     console.error("this is the error", error.message);
   }
 };
-const signupotp = async ({ email }, res) => {
+const signupotp = async ({ email }, res) => {  
   try {
     const sendmail = {
       from: process.env.SMTP_MAIL,
@@ -88,12 +89,14 @@ const signupotp = async ({ email }, res) => {
     const hashedOtp = await bcrypt.hash(otp, 10);
     const newOtpVerification = new signupOtpVerification({
       otp: hashedOtp,
+      email:email,
       createAt: Date.now(),
-    });
+    });   
     const verifydata = await newOtpVerification.save();
     console.log(verifydata);
     await sendotp.sendMail(sendmail)
-    res.redirect(`/verifyotp`);
+    res.redirect('/verifyotp');
+  
   } catch (error) {
     console.log("the eerror", error);
   }}
@@ -104,17 +107,17 @@ const loginpost = async (req, res) => {
   try {
     const email = req.body.email
     const password = req.body.password 
-    const UserData = await Userss.findOne({email})
+    const userData = await Userss.findOne({email})
           
-        if (UserData) {
-          if (UserData.Is_verified === true) {
-              if (UserData.is_blocked==true) {
+        if (userData) {
+          if (userData.Is_verified === true) {
+              if (userData.is_blocked==true) {
                   res.render('login', { message: "Your account is blocked by the admin." });
                 }else{
-                  const passwordMatch = await bcrypt.compare(password,UserData.password)
+                  const passwordMatch = await bcrypt.compare(password,userData.password)
               
                 if(passwordMatch){
-                  req.session.user_id= UserData._id
+                  req.session.user_id= userData._id
                   res.redirect("/")
                 }
                 else{
@@ -122,7 +125,7 @@ const loginpost = async (req, res) => {
                 }
           }
         }else{
-           sendOtpVerificationEmail(userData, res);
+          signupotp(userData,res)
            }
         } else {
         res.render('login', { message: "Email is not registered. Please register first." });
@@ -131,15 +134,23 @@ const loginpost = async (req, res) => {
   catch (err) {
     console.log("loginpost",err)
 }
-};
-const otpverificationget = async (req, res,) => {
-  res.render("otp", { emaila })
-};
-const otpverificationpost = async (req, res) => {
-  try {
+}; 
+const otpverificationget = async (req,res,) => {
+ try{ 
+  const otp= await signupOtpVerification.findOne()
+  if(otp){
+    res.render("otp",{otp})
+  }
+  }catch(err){
+    console.log(err)
+  } 
+}; 
+
+const otpverificationpost = async (req, res) => { 
+  try {  
     const postotp = req.body.otp
-    console.log(postotp);
-    const hashed = await signupOtpVerification.findOne();
+    console.log(postotp); 
+    const hashed = await signupOtpVerification.findOne(); 
     const { otp: hashedOtp } = hashed
     console.log(hashedOtp);
     const validOtp = await bcrypt.compare(postotp, hashedOtp);
@@ -147,9 +158,10 @@ const otpverificationpost = async (req, res) => {
       return res.render("otp", { message: "otp was expired/not valid" })
     }
     else {
-      await Userss.updateOne({ $set: { Is_verified: true } });
-      res.redirect("/login")
+      await Userss.findOneAndUpdate(
+        {email:hashed.email},{ $set: { Is_verified: true } }); 
     }
+    res.redirect("/login")
   }
   catch (error) {
     console.log(error);
@@ -185,7 +197,7 @@ const shopLaod = async (req,res)=>{
   
           let filterCriteria = {
               is_blocked: false,
-              isCategoryBlocked: false
+              isCategoryBlocked: false     
           };
   
           if (search) {
@@ -340,7 +352,81 @@ const userpasswordChange = async (req,res)=>{
     console.log(err);
   }
 }
+const forgotpassword = async (req,res)=>{
+try{
+  const token = req.params.token
+  res.render("forgot",{token})
+}catch (err){
+  console.log(err);
+}
+}
+const forgotpasswordPost = async (req,res)=>{
+  try{
+    const email = req.body.email
+    const User = await Userss.findOne({email})
+    if (User){
+      const token = crypto.randomBytes(20).toString('hex');
+      User.resetToken = token;
+      User.resetTokenExpiry = Date.now() + 300000; 
+      await User.save()
+      const resetLink = `http://localhost:4000/resetPassword${token}`;
+      const mailOptions = {
+        from: process.env.SMTP_MAIL,
+        to: email,
+        subject: 'Password Reset',
+        html: `
+            <p>Dear User,</p>
+            <p>We received a request to reset your password. Click the following link to proceed:</p>
+            <a href="${resetLink}" style="text-decoration: none; color: #007BFF; font-weight: bold;">Reset Your Password</a>
+            <p>If you didn't initiate this request, please ignore this email.</p>
+            <p>Thank you,</p>
+            <p>Ezycart</p>
+        `,
+    };
+    await sendotp.sendMail(mailOptions);
+      res.render("login",{token})
+    }else{
+      res.render("forgot",{message:"user is not registered"});
+    }
+  }catch(err){
+    console.log(err)
+  }
+}
+const loadresetpassword = async(req,res)=>{
+  try {
+      const token = req.params.token;
 
+      res.render("resetPassword",{token},)
+  } catch (error) {
+      console.log(error);
+  }
+}
+const resetPassword = async (req, res) => {
+  try {
+      const token = req.body.token;
+      const pass1 = req.body.password1;
+      const pass2 = req.body.password2;
+      const user = await Userss.findOne({ resetToken: token, resetTokenExpiry: { $gt: Date.now() } });
+      if (pass1 !== pass2) {
+          res.render('resetPassword', { message: "Passwords do not match!", token });
+      } else {
+          const newPasswordHash = await bcrypt.hash(pass1, 10);
+
+          if ( await bcrypt.compare(pass1, user.password) ) {
+              res.render('resetPassword', { message: "Your old password and new password are the same!", token });
+          } else {
+              user.password = newPasswordHash;
+              user.resetToken = null;
+              user.resetTokenExpiry = null;
+              await user.save();
+              res.render('login');
+          }
+      }
+  } catch (error) {
+      console.error(error);
+      res.status(500).send('Internal Server Error');
+  }
+};
 
 const productSearch = async(req,res)=>{
   try {
@@ -373,6 +459,10 @@ module.exports = {
   userpasswordChange,
   loadaccount,
   productSearch,
-  userLogout
+  userLogout,
+  forgotpassword,
+  forgotpasswordPost,
+  loadresetpassword,
+  resetPassword
 
 }

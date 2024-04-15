@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 const userOtpVerificationSchema = mongoose.Schema({ 
+    email:String,
     otp:String,
     createAt:{
         type:Date,

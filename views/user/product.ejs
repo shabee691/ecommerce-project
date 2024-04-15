@@ -375,8 +375,18 @@
                                                     <div>
                                                         <h4><a href="#"><%= reviewItem.userId.name %>.</a></h4>
                                                         <div class="ratings-container">
-                                                            <div class="ratings">
-                                                                
+                                                            <div>
+                                                                <%if(review.rating == 5){%>
+                                                                    <span >⭐⭐⭐⭐⭐ (5 Stars)</span>
+                                                                <%}if(review.rating === 4){%>
+                                                                    <span >⭐⭐⭐⭐ (4 Stars)</span>
+                                                                <%}if(review.rating === 3){%>
+                                                                    <span>⭐⭐⭐ (3 Stars)</span>
+                                                                <%}if(review.rating === 2){%>
+                                                                    <span>⭐⭐ (2 Stars)</span>
+                                                                <%}if(review.rating === 1){%>
+                                                                    <span >⭐ (1 Star)</span>
+                                                                <%}%>
                                                             </div>
                                                         </div>
                                                         <% 

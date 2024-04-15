@@ -9,8 +9,7 @@ const mongoose=require("mongoose")
     email:{
         type:String,
         require:true
-                    },
-
+    },
     password:{
         type:String,
         require:true
@@ -26,32 +25,21 @@ const mongoose=require("mongoose")
     Is_verified:{
         type:Boolean,
         default:false,
-        required:true
     },
     is_blocked: {
     type: Boolean,
     default: false
   },
-    resetToken: String,
-    resetTokenExpiry: Date,
-    wallet:{
-        type:Number,
-        default:0
-},
-    walletHistory:[{
-    date:{
-        type:Date
+    is_admin: {
+    type: Boolean,
+    default: false
     },
-    amount:{
-        type:Number,
-    },
-}]
-
-   
-     
-
-
-
+    resetToken:{
+        type: String,
+    } ,
+    resetTokenExpiry:{
+        type:Date,
+    } 
 })
 const collecteddata =mongoose.model("signupdata",mongooseschema)
 module.exports = collecteddata;
