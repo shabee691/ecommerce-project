@@ -36,8 +36,36 @@
 
     
 </head>
+<style>
+    /* style.css */
 
 
+.star {
+font-size: 10vh;
+cursor: pointer;
+}
+
+.one {
+color: rgb(255, 0, 0);
+}
+
+.two {
+color: rgb(255, 106, 0);
+}
+
+.three {
+color: rgb(251, 255, 120);
+}
+
+.four {
+color: rgb(255, 255, 0);
+}
+
+.five {
+color: rgb(24, 159, 14);
+}
+
+</style>
 <body>
 
     <div class="page-wrapper">
@@ -223,28 +251,27 @@
           
                     <input type="text" id="productId" name="productId" hidden>
                     <input type="text" id="orderId" name="orderId" hidden>
-                    <div class="form-group">
-                      <label for="starRating">Rate the Product</label>
-                      <select class="form-control" id="starRating"  name="starRating" required>
-                        <option value="5">⭐⭐⭐⭐⭐ (5 Stars)</option>
-                        <option value="4">⭐⭐⭐⭐ (4 Stars)</option>
-                        <option value="3">⭐⭐⭐ (3 Stars)</option>
-                        <option value="2">⭐⭐ (2 Stars)</option>
-                        <option value="1">⭐ (1 Star)</option>
-                      </select>
-                    </div>
+                        <div  class="form-group">
+                            <label for="starRating">Rate the Product</label>
+                            <span id="starRating"  name="starRating">
+                                <span onclick="gfg(1)" class="star">★</span>
+                                <span onclick="gfg(2)" class="star">★</span>
+                                <span onclick="gfg(3)" class="star">★</span>
+                                <span onclick="gfg(4)" class="star">★</span>
+                                <span onclick="gfg(5)" class="star">★</span>
 
+                                <h3 id="output">
+                                    Leave Review
+                                </h3>
+                            </span>
+                        </div>
+                        <input type="hidden" id="starCount" name="starRating" value="">
                     <button type="submit" class="btn btn-success">Submit Review</button>
                   </form>
                 </div>
               </div>
             </div>
           </div>
-          
-
-
-
-
         <footer class="footer mt-5">
             <div class="footer-middle">
                 <div class="container">
@@ -420,22 +447,70 @@ function returnProduct(productId) {
 
 
 
-function getProductId(productId, orderId) {
+function getProductId(productId, orderId , starRating) {
   selectedProductId = productId;
   console.log(productId, orderId)
   console.log(selectedProductId);
 
   const inputField1 = document.getElementById("productId");
   const inputField2 = document.getElementById("orderId");
+  const inputField3 = document.getElementById("starRating")
 
   inputField1.value = selectedProductId;
   inputField2.value = orderId;
+  inputField3.value = starRating
 
   console.log(inputField2.value)
 }
 
+// script.js
 
+// To access the stars
+let stars = 
+	document.getElementsByClassName("star");
+let output = 
+	document.getElementById("output");
 
+// Funtion to update rating
+function gfg(n) {
+	remove();
+	for (let i = 0; i < n; i++) {
+		if (n == 1) cls = "one";
+		else if (n == 2) cls = "two";
+		else if (n == 3) cls = "three";
+		else if (n == 4) cls = "four";
+		else if (n == 5) cls = "five";
+		stars[i].className = "star " + cls;
+	}
+    const starCountInput = document.getElementById("starCount");
+    starCountInput.value = n;
+     if (n == 1) {
+	output.innerText = "Rating is: " + "Very Bad";
+     }
+     if (n == 2) {
+	output.innerText = "Rating is: " + " Bad ";
+     }
+     if (n == 3) {
+	output.innerText = "Rating is: " + "Not bad";
+
+     }
+     if (n == 4) {
+	output.innerText = "Rating is: " + "Good" ;
+     }
+     if (n == 5) {
+	output.innerText = "Rating is: " + "Very Good" ;
+     }
+}
+
+// To remove the pre-applied styling
+function remove() {
+	let i = 0;
+	while (i < 5) {
+		stars[i].className = "star";
+		i++;
+	}
+}
+    // Set the star count to a hidden input field
 </script>
 
 

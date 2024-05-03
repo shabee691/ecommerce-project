@@ -13,7 +13,6 @@ const Dashboardget = async function (req,res) {
     const productcount = await Product.countDocuments();
     const categorycount = await Category.countDocuments();
     const order = await Order.find().populate('userId');
-
     const totalrevenue = await Order.aggregate([
         {
             $match: {
@@ -55,15 +54,15 @@ const Dashboardget = async function (req,res) {
     const monthlyRevenueNumber = monthlyrevenue.map(result => result.monthlyrevenue)[0] || 0;
 
     res.render('dashboard', { ordercount, productcount, categorycount, totalRevenueNumber, monthlyRevenueNumber, order });
-} catch (error) {
-    console.log(error);
+} catch (error) { 
+    res.status(500)
 }
 }
 const adminLogout = async (req, res) => {
     try {
         req.session.destroy();
         res.redirect('/admin');
-    } catch (error) {
+    } catch (error) { 
         console.log(error.message);
     }
 }
@@ -133,7 +132,6 @@ const addcategoryget = async function (req,res){
    
 }
 const addcategorypost = async function (req,res){
-    
     try{
         const name = req.body.name
         const description = req.body.description
@@ -200,18 +198,29 @@ catch (err){
 }
 
 const orderLoad = async (req,res)=>{
+
 try{
+ const admin = req.session.admin_id
+ if(admin){
  const order =await Order.find({}).sort({parchaseDate:-1})
  res.render("order",{order})
+ }else{
+    res.redirect("/admin") 
+ }
 }catch(err){
   console.log(err)
 }
 }
 const showorderLoad = async(req,res)=>{
   try {
+    const admin = req.session.admin_id
     const id=req.query.id;
+    if(admin){
     const order=await Order.findOne({_id:id}).populate('products.productId')
     res.render('showorder',{order})
+    }else{
+        res.redirect("/admin")
+    }
 } catch (error) {
     console.log(error);
 }
@@ -225,7 +234,7 @@ const ProductStatus = async (req,res)=>{
         {
             'products._id':productid
         },
-        {
+        { 
             $set:{
                 'products.$.productstatus':productstatus,
                  status:productstatus   

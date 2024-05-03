@@ -182,68 +182,69 @@ const homeLoad = async(req,res)=>{
     console.log(error.message);
 }
 }
-const shopLaod = async (req,res)=>{
-  try{
-    const categoryId = req.query.category;
-          const cart =  await Cart.findOne({user:req.session.user_id}).populate("product.productId")
-          const priceFilter = req.query.priceFilter === "low-to-high" ? 1 : -1;
-          const page = parseInt(req.query.page) || 1;
-          const itemsPerPage = 9;
-  
-          const userData = await Userss.findOne({ _id: req.session.user_id });
-          const search = req.query.search;
-  
-         
-  
-          let filterCriteria = {
-              is_blocked: false,
-              isCategoryBlocked: false     
-          };
-  
-          if (search) {
-              filterCriteria.name = { $regex: search, $options: 'i' };
-          }
-  
-          if (categoryId) {
-              filterCriteria.categoryId = categoryId;
-          }
-  
-          const totalCount = await Product.countDocuments(filterCriteria);
-  
-          if (totalCount > 0) {
-              const totalPages = Math.ceil(totalCount / itemsPerPage);
-  
-              let productData = await Product.find()
-                  .populate('categoryId')
-                  .sort({ price: priceFilter })
-                  .skip((page - 1) * itemsPerPage)
-                  .limit(itemsPerPage);
-  
-              const category = await Category.find({});
-  
-              res.render("shop", {
-                  product: productData,
-                  user: userData,
-                  category,
-                  totalPages,
-                  currentPage: page,
-                  cart
-              });
-          } else { 
-              res.render("shop", {
-                  product: [],
-                  user: userData,
-                  category: [],
-                  totalPages: 0,
-                  currentPage: 0,
-                  cart
-              });
-          }
-      } catch (error) {
-          console.error(error.message);
-          res.status(500).send('Internal Server Error');
+const shopLaod = async (req, res) => {
+  try {
+      const user_id = req.session.user_id;
+      console.log(user_id, 'in shop');
+
+      const searchQuery = req.query.search;
+      let productQuery = Product.find();
+
+      // If a search query is provided, filter products by name
+      if (searchQuery) {
+          productQuery = productQuery.where('name').regex(new RegExp(searchQuery, 'i'));
       }
-    }
+
+      // Apply category filter if selected
+      if (req.query.category) {
+          productQuery = productQuery.where('categoryId').equals(req.query.category);
+      }
+
+      if (req.query.priceFilter) {
+          if (req.query.priceFilter === 'high-to-low') {
+              productQuery = productQuery.sort({ price: -1 });
+          } else if (req.query.priceFilter === 'low-to-high') {
+              productQuery = productQuery.sort({ price: 1 });
+          }
+      }
+
+      // Count total documents for pagination
+      const totalProducts = await Product.countDocuments(productQuery);
+
+      // Pagination
+      const page = Math.max(parseInt(req.query.page) || 1, 1);
+      const perPage = 4; // Adjust the number of products per page as needed
+      const totalPages = Math.ceil(totalProducts / perPage);
+      const currentPage = Math.min(page, totalPages);
+      const skipValue = Math.max((currentPage - 1) * perPage, 0);
+
+      // Apply pagination and execute the query
+      const product = await productQuery
+          .skip(skipValue)
+          .limit(perPage)
+          .exec();
+
+      const cart = await Cart.findOne({ user: user_id }).populate("product.productId");
+      const category = await Category.find();
+      const wishlistData = await Wishlist.findOne({ user: user_id }).populate("product.productId");
+
+      res.render('shop', {
+          product,
+          totalPages,
+          currentPage,
+          category,
+          cart,
+          searchQuery,
+          wishlistData,
+          priceFilter: req.query.priceFilter,
+          selectedCategory: req.query.category
+      });
+  } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: error.message });
+  }
+}
+
     
 
 const productLoad = async (req,res)=>{
