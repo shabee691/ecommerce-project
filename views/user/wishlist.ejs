@@ -18,6 +18,7 @@
     <link rel="manifest" href="public/assets/images/icons/site">
     <link rel="mask-icon" href="public/assets/images/icons/safari-pinned-tab.svg" color="#666666">
     <link rel="shortcut icon" href="public/assets/images/icons/favicon.ico">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css">
     <meta name="apple-mobile-web-app-title" content="Molla">
     <meta name="application-name" content="Molla">
     <meta name="msapplication-TileColor" content="#cc9966">
@@ -27,6 +28,7 @@
     <link rel="stylesheet" href="public/assets/css/bootstrap.min.css">
     <!-- Main CSS File -->
     <link rel="stylesheet" href="public/assets/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 </head>
 
 <body>
@@ -66,7 +68,7 @@
                                     <li><a href="wishlist"><i class="icon-heart-o"></i>Wishlist <span></span></a></li>
                                     <li><a href="about">About Us</a></li>
                                     <li><a href="contact">Contact Us</a></li>
-                                    <li><a href="#signin-modal" data-toggle="modal"><i class="icon-user"></i>Login</a></li>
+                                    <li><a href="login" ><i class="icon-user"></i>Login</a></li>
                                 </ul>
                             </li>
                         </ul><!-- End .top-menu -->
@@ -164,7 +166,6 @@
 							<tr>
 								<th>Product</th>
 								<th>Price</th>
-								<th>Stock</th>  
 							</tr>
 						</thead>
 
@@ -174,7 +175,7 @@
 								<td class="product-col">
 									<div class="product">
 										<figure class="product-media">
-                                            <a>
+                                            <a href="/product?id=<%=product.productId._id%>">
                                                 <img src="/public/assets/images/products/sharpened/<%= product.productId.images[0]%>" alt="Product image" class="product-image">
                                               </a>
 										</figure>
@@ -185,6 +186,16 @@
 									</div><!-- End .product -->
 								</td>
 								<td class="price-col"><%=product.price %></td>
+                                <td class="action-col">
+                                    <a>
+									<button onclick="addtocart('<%= product.productId._id %>')" class="btn btn-block btn-outline-primary-2"><i class="icon-cart-plus"></i>Add to Cart</button>
+                                    </a>
+								</td>
+                                <td class="remove-col">
+                                    <button class="btn-remove" onclick="removewishlist('<%= product.productId._id %>')">
+                                        <i class="icon-close"></i>
+                                    </button>
+                                </td>
 							</tr>
                         <%})%>
 						</tbody>
@@ -553,7 +564,92 @@
         </div><!-- End .modal-dialog -->
     </div><!-- End .modal -->
 
+    <script>
+    
+        function removewishlist(productId) {
+            fetch("/removewishlists", {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ productId }),
+            })
+            .then(response => response.json())
+            .then(response => {
+                if (response.success) {
+                    Swal.fire({
+                        title: "Item Removed!",
+                        text: "The item has been successfully removed from your wishlist.",
+                        icon: "success",
+                        showConfirmButton: false,
+                        timer: 4000,
+                    });
+                    setTimeout(() => {
+                        location.reload(); // Reload the page
+                    }, 1500);
+                } else {
+                    console.error('Error removing item:', response.error);
+                    Swal.fire({
+                        title: "Error",
+                        text: response.error || "An error occurred while removing the item from the wishlist.",
+                        icon: "error",
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error removing item:', error);
+                Swal.fire({
+                    title: "Error",
+                    text: "An error occurred while processing your request.",
+                    icon: "error",
+                });
+            });
+        }
+        function addtocart(productId) {
+     $.ajax({
+        url: '/addcart',
+        method: 'patch',
+        data: { productId },
+        success: function (response) {
+            console.log('Response from server:', response);
 
+            if (response.quantity == false) {
+                Swal.fire(
+                    'Out of Stock',
+                    response.error || 'Product is Out of stock',
+                    'warning'
+                );
+            }
+            
+            else if(response.session== false){
+                    Swal.fire({
+                    title: 'Login Required',
+                    text: response.error || 'You want to login.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Login',
+                    cancelButtonText: 'Cancel',
+                });}
+                 else {
+                Swal.fire(
+                    'Saved to cart!',
+                    'Product added to cart successfully!',
+                    'success'
+                );
+            }
+        },
+        error: function (error) {
+            console.error('Error:', error);
+            Swal.fire(
+                'Error',
+                'An error occurred while processing your request.',
+                'error'
+            );
+        }
+    });
+}
+       
+    </script>
 
 
     <!-- Plugins JS File -->

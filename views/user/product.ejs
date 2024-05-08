@@ -288,10 +288,9 @@
                                 <div class="product-details-action">
                                     <a  class="btn-product btn-cart"
                                         onclick="addToCart('<%= product._id %>');"><span>add to cart</span></a>
-
-                                        <button type="button" class="btn btn-outline-danger" onclick="addtoWishlist('<%= product._id %>')" data-toggle="modal" data-target="#wishlistModal<%= product._id %>">
-                                             Add to Wishlist
-                                         </button><!-- End .details-action-wrapper -->
+                                            <button type="button" class="btn btn-outline-danger" onclick="addtoWishlist('<%= product._id %>')" data-toggle="modal" data-target="#wishlistModal<%= product._id %>">
+                                                Add to Wishlist
+                                            </button>
                                 </div><!-- End .product-details-action -->
 
                                 <div class="product-details-footer">
@@ -378,7 +377,7 @@
                                                             <div class="star-rating">
                                                                 <% for (let i = 1; i <= 5; i++) { %>
                                                                     <% if (i <= reviewItem.rating) { %>
-                                                                        <span class="star" style="color: rgb(0, 0, 0); width: 100px;">&#9733;</span>
+                                                                        <span class="star" style="color: rgb(0, 0, 0);">&#9733;</span>
                                                                         <% } else { %>
                                                                         <span class="star">&#9734;</span>
                                                                     <% } %>
@@ -394,17 +393,10 @@
                                                         %>
                                                         <span class="review-date"><%= formattedDate %></span>
                                                     </div>
-                                                </div>
+                                                </div>                                               
                                                 <div class="col-4">
+                                                    <br>
                                                     <h4><%= reviewItem.comment %></h4>
-                                                    <div class="review-action">
-                                                        <button onclick="vote('like', '<%=reviewItem._id%>', '<%=reviewItem.productId%>')">
-                                                            <i class="icon-thumbs-up"></i> Like (<span id="likeCount">2</span>)
-                                                        </button>
-                                                        <button onclick="vote('dislike', '<%=reviewItem._id%>', '<%=reviewItem.productId%>')">
-                                                            <i class="icon-thumbs-down"></i> Dislike (<span id="dislikeCount">0</span>)
-                                                        </button>
-                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -614,70 +606,6 @@
     </footer><!-- End .footer -->
     </div><!-- End .page-wrapper -->
     <button id="scroll-top" title="Back to Top"><i class="icon-arrow-up"></i></button>
-
-    <script>
-        const galleryItems = document.querySelectorAll('.product-gallery-item');
-
-        const mainImage = document.getElementById('mainImage');
-
-        galleryItems.forEach(item => {
-            item.addEventListener('click', function (event) {
-                const imageURL = this.dataset.zoomImage || this.dataset.image;
-                mainImage.src = imageURL;
-
-                galleryItems.forEach(item => item.classList.remove('active'));
-                this.classList.add('active');
-
-                event.preventDefault(); 
-            });
-        });
-
-    function vote(type, reviewId, productId) {
-    console.log(type,  reviewId, productId);
-    $.ajax({
-        url: '/vote',
-        method: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify({ type, reviewId, productId }),
-        dataType: 'json',
-        success: (response) => {
-            console.log(response)
-            if (response.success === true && response.likes) {
-    $('#likeCount').text(response.likes.filter(like => like.type === 'like').length);
-    $('#dislikeCount').text(response.likes.filter(like => like.type === 'dislike').length);
-} else if (response.success === false) {
-    Swal.fire({
-        icon: 'error',
-        title: 'Unauthorized',
-        text: response.error,
-    });
-} else {
-    console.error('Error:', response);
-}
-
-        },
-        error: (error) => {
-            console.error('Error:', error);
-        },
-    });
-}
-
-
-   $(document).ready(function () {
-       $('.product-main-image img').elevateZoom({
-           zoomType: "inner",
-           cursor: "crosshair",
-           gallery: 'product-zoom-gallery',
-           galleryActiveClass: 'active',
-           imageCrossfade: true
-       });
-   });
-</script>
-
-
-
-    </script>
-
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 
     <script src="public/assets/js/jquery.min.js"></script>

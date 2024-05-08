@@ -15,6 +15,7 @@ const Wishlist = require("../models/wishlist")
 const dotenv = require("dotenv");
 const crypto = require ("crypto")
 const Razorpay = require("razorpay")
+const wishlist = require("../models/wishlist")
 dotenv.config()
 const securePassword = async (password) => {
   try {
@@ -174,10 +175,8 @@ const homeLoad = async(req,res)=>{
     const wishlist = await Wishlist.findOne({user:user_id}).populate("product.productId")
     const userData = await Userss.findOne({_id:user_id})
     const banner = await Banner.find({})
-    const product = await Product.find({})
-  
-
-    res.render('home',{user:userData,cart:cartData,banner,wishlist,product},);
+    const product = await Product.find().limit(20)
+    res.render('home',{user:userData,cart:cartData,banner,wishlist,product});
 } catch (error) {
     console.log(error.message);
 }
@@ -213,7 +212,7 @@ const shopLaod = async (req, res) => {
 
       // Pagination
       const page = Math.max(parseInt(req.query.page) || 1, 1);
-      const perPage = 4; // Adjust the number of products per page as needed
+      const perPage = 6; // Adjust the number of products per page as needed
       const totalPages = Math.ceil(totalProducts / perPage);
       const currentPage = Math.min(page, totalPages);
       const skipValue = Math.max((currentPage - 1) * perPage, 0);
@@ -259,7 +258,7 @@ const productLoad = async (req,res)=>{
    res.render("product",{product,user,review,date}) 
   }
   catch(err){
-
+    console.log(err);
   }
 }
 const loadaccount = async(req,res)=>{

@@ -22,7 +22,7 @@ const port=process.env.PORT
 
 app.use(flash())
 
-mongoose.connect("mongodb://localhost:27017/footCart").then(()=>{
+mongoose.connect(process.env.MONGOOB_URL).then(()=>{
     console.log("wawh mongoose connected");
 }).catch((err)=>{
     console.log("hell not connected");

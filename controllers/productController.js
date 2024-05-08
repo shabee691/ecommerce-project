@@ -53,7 +53,7 @@ const addproduct = async (req,res)=>{
         console.log(`addproduct${error}`);
    }
 }
-const editProductLoad = async (req,res)=>{
+const editProductLoad = async (req,res)=>{ 
     try{
         const productid = req.query.id
         const product = await Product.findOne({_id:productid})

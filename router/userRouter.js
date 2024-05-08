@@ -51,6 +51,7 @@ userRouter  .get("/",userController.homeLoad)
             .get('/search',userController.productSearch)
             .get('/editReview',reviewController.editReviewLoad)
             .post('/submit-review',reviewController.addreview)
+            .post("/removewishlists",wishlistController.removeWishlist)
             
             
             

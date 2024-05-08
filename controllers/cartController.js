@@ -115,7 +115,7 @@ const removecartitem = async (req, res) => {
     }
 };
 
-
+ 
 const loadcheckout = async(req,res)=>{ 
     try {
             const userId = req.session.user_id;
@@ -149,5 +149,4 @@ module.exports={
     updateCart,
     loadcheckout,
     removecartitem,
-
 }

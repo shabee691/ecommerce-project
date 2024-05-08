@@ -24,9 +24,6 @@
     <div class="screen-overlay"></div>
     <aside class="navbar-aside" id="offcanvas_aside">
         <div class="aside-top">
-            <a href="index" class="brand-wrap">
-                <img src="/public/assets/imgs/theme/logo.png" class="logo" alt="Nest Dashboard" />
-            </a>
             <div>
                 <button class="btn btn-icon btn-aside-minimize"><i
                         class="text-muted material-icons md-menu_open"></i></button>
@@ -249,7 +246,6 @@
                                             <% } %>
                                         </tbody>
                                     </table>
-                                    
                                 </div>
                                 <% } else { %>
                                     <p>No products found in the database.</p>
@@ -277,35 +273,20 @@
         </footer>
     </main>
 
-     <script>
-        document.querySelectorAll('.block-user, .unblock-user').forEach(function (element) {
-            console.log(element);
-            element.addEventListener('click', function (event) {
-                event.preventDefault();
-
-                const userId = element.getAttribute('data-user-id');
-                const action = element.classList.contains('block-user') ? 'block' : 'unblock';
-
-                fetch(`/admin/blockproducts/${userId}`, {
-                    method: 'PATCH',
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.block === true) {
-                            //updating the button text and color
-                            element.querySelector('span').classList.toggle('alert-success');
-                            element.querySelector('span').classList.toggle('alert-warning');
-                            element.querySelector('span').innerText = action === 'block' ? 'unblock' : 'block';
-
-                            // Replace button class
-                            element.classList.remove(action === 'block' ? 'block-user' : 'unblock-user');
-                            element.classList.add(action === 'block' ? 'unblock-user' : 'block-user');
-                        }
-                    }).catch((error) => {
-                        console.log(error.message);
-                    })
-
-            });
+    <script src="/public/assets/js/vendors/jquery-3.6.0.min.js"></script>
+    <script src="/public/assets/js/vendors/bootstrap.bundle.min.js"></script>
+    <!-- Include Axios from a CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="/public/assets/js/vendors/select2.min.js"></script>
+    <script src="/public/assets/js/vendors/perfect-scrollbar.js"></script>
+    <script src="/public/assets/js/vendors/jquery.fullscreen.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script src="https://cdn.datatables.net/1.13.2/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" charset="utf8"
+        src="https://cdn.datatables.net/1.13.2/js/jquery.dataTables.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#tablePagination').DataTable();
         });
     </script>
     <!-- Main Script -->
