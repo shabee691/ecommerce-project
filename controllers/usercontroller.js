@@ -37,28 +37,28 @@ const signupPost = async (req, res) => {
 
   });
   try {
-    //  if (!req.body.name && !req.body.email && !req.body.mobile && !req.body.password &&! req.body.name) {
-    //      return res.render("signup",  { message: 'All fields are required.' });
-    // }
-    //   if (!emailRegex.test(req.body.email )) {
-    //     return res.render("signup", { message:'Invalid email format.' });
-    // }
-    //   if (req.body.password.length < 8) {
-    //     return res.render("signup",{ message: 'Password must be at least 8 characters long.' });
-    // }
-    //  if (req.body.mobile.length < 10){
-    //       res.render("signup",{message: "Mobile number should be 10 digit "})
-    //     return;
-    // }
-    //  if (existingUser) {
-    //     res.render("signup", { message: "User already exists" });
-    //     return; 
+     if (!req.body.name && !req.body.email && !req.body.mobile && !req.body.password &&! req.body.name) {
+         return res.render("signup",  { message: 'All fields are required.' });
+    }
+      if (!emailRegex.test(req.body.email )) {
+        return res.render("signup", { message:'Invalid email format.' });
+    }
+      if (req.body.password.length < 8) {
+        return res.render("signup",{ message: 'Password must be at least 8 characters long.' });
+    }
+     if (req.body.mobile.length < 10){
+          res.render("signup",{message: "Mobile number should be 10 digit "})
+        return;
+    }
+     if (existingUser) {
+        res.render("signup", { message: "User already exists" });
+        return; 
 
-    //   }
-    //   if(req.body.password!==req.body.conformPassword){
-    //     res.render("signup",{message:"Conform Password Should be same as first password"})
-    //     return;
-    //   }
+      }
+      if(req.body.password!==req.body.conformPassword){
+        res.render("signup",{message:"Conform Password Should be same as first password"})
+        return;
+      }
     const spassword = await securePassword(req.body.password)
     const { name, email, mobile } = req.body;
     const user = new Userss({
