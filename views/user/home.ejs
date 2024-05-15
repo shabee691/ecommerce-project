@@ -44,11 +44,6 @@
             <div class="header-middle">
                 <div class="container">
                     <div class="header-left">
-                        <button class="mobile-menu-toggler">
-                            <span class="sr-only">Toggle mobile menu</span>
-                            <i class="icon-bars"></i>
-                        </button>
-                        
                         <a href="/" class="logo">
                             <img src=public\assets\imgs\theme\Ezycart.png alt="Molla Logo" width="105" height="25">
                         </a>
@@ -236,9 +231,11 @@
                                     ₹<%=product.price%>
                                 </div><!-- End .product-price -->
                                    <!-- Wishlist/Love button and modal trigger -->
-                                    <button type="button" class="btn btn-outline-danger" onclick="addtoWishlist('<%= product._id %>')" data-toggle="modal" data-target="#wishlistModal<%= product._id %>">
-                                       <i class="fas fa-heart"></i> Add to Wishlist
-                                    </button>
+                                   <div class="product-action-vertical">
+                                    <a class="btn-product-icon btn-wishlist " onclick="addtoWishlist('<%= product._id %>')" data-toggle="modal" data-target="#wishlistModal<%= product._id %>">
+                                       <span>add to wishlist</span>
+                                    </a>
+                                </div>
                             </div><!-- End .product-body -->
                             <div class="product-action">
                                 <a  class="btn-product btn-cart"
